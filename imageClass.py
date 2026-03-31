@@ -19,7 +19,7 @@ class Image:
 
         # Initialize the image using initialized variables
         try:
-            self.image = pygame.image.load(name + ".png").convert_alpha()
+            self.image = pygame.image.load(f"Images/{name}.png").convert_alpha()
 
             self.width = self.image.get_width()
             #self.width = int( self.width * (scale[0] / 100) )

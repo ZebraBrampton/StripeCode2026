@@ -80,12 +80,6 @@ class RideWindow:
 
             finally: # Incase an error comes along the way
                 pass
-
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-
-                self.running = False
             
 
 

@@ -1,0 +1,49 @@
+Hour,Location,Items Sold,Sales Amount
+10:00,Hydration Station,13,$53.53
+10:00,Pixel Popcorn,18,$112.26
+10:00,Quantum Cafe,19,$113.32
+10:00,The Sugar Shack,26,$157.05
+11:00,Hydration Station,18,$74.95
+11:00,Pixel Popcorn,26,$157.16
+11:00,Quantum Cafe,27,$158.65
+11:00,The Sugar Shack,36,$219.87
+12:00,Hydration Station,32,$132.08
+12:00,Pixel Popcorn,45,$269.42
+12:00,Quantum Cafe,48,$283.31
+12:00,The Sugar Shack,62,$376.92
+13:00,Hydration Station,40,$164.55
+13:00,Pixel Popcorn,56,$336.78
+13:00,Quantum Cafe,59,$352.12
+13:00,The Sugar Shack,78,$471.15
+14:00,Hydration Station,32,$132.08
+14:00,Pixel Popcorn,45,$269.42
+14:00,Quantum Cafe,48,$283.31
+14:00,The Sugar Shack,62,$376.92
+15:00,Hydration Station,21,$85.86
+15:00,Pixel Popcorn,30,$179.62
+15:00,Quantum Cafe,31,$184.15
+15:00,The Sugar Shack,41,$251.28
+16:00,Hydration Station,18,$74.95
+16:00,Pixel Popcorn,26,$157.16
+16:00,Quantum Cafe,27,$158.65
+16:00,The Sugar Shack,36,$219.87
+17:00,Hydration Station,21,$85.86
+17:00,Pixel Popcorn,30,$179.62
+17:00,Quantum Cafe,31,$184.15
+17:00,The Sugar Shack,41,$251.28
+18:00,Hydration Station,35,$143.09
+18:00,Pixel Popcorn,48,$291.88
+18:00,Quantum Cafe,51,$306.91
+18:00,The Sugar Shack,67,$408.33
+19:00,Hydration Station,40,$164.55
+19:00,Pixel Popcorn,56,$336.78
+19:00,Quantum Cafe,59,$352.12
+19:00,The Sugar Shack,78,$471.15
+20:00,Hydration Station,27,$109.91
+20:00,Pixel Popcorn,37,$224.52
+20:00,Quantum Cafe,39,$234.74
+20:00,The Sugar Shack,52,$314.10
+21:00,Hydration Station,13,$53.53
+21:00,Pixel Popcorn,18,$112.26
+21:00,Quantum Cafe,19,$113.32
+21:00,The Sugar Shack,26,$157.05
