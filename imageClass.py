@@ -39,7 +39,11 @@ class Image:
 
         except FileNotFoundError:
             self.image = None
-    
+
+    def draw_text(self, text, colour, text_pos, surface):
+        text_surface = pygame.font.SysFont("Arial", 18, bold=True).render(text, True, colour)
+        text_rect = text_surface.get_rect(center=text_pos)
+        surface.blit(text_surface, text_rect)
 
     def hover_mouse(self, surface):
 
@@ -59,7 +63,6 @@ class Image:
                          (self.pos),
                          5)
         
-
     def check_mouse(self, surface):
         action = False
         
@@ -83,6 +86,17 @@ class Image:
 
         return action
 
+    def draw_alert(self, surface):
+        # Flashes every 500ms (0.5 seconds)
+        # Lowering time will make it flash faster, increasing time will make it flash slower
+        if (pygame.time.get_ticks() // 500) % 2 == 0:
+            pygame.draw.polygon(surface, (255, 0, 0), [
+                (self.pos[0] + self.width * 1.1, self.pos[1] + self.height // 2),
+                (self.pos[0] + self.width * 1.1 - 10, self.pos[1] + self.height // 3),
+                (self.pos[0] + self.width * 1.1 + 10, self.pos[1] + self.height // 3)
+            ])
+        
+        self.draw_text("ALERT", (255, 255, 255), (self.pos[0] + self.width * 1.1, self.pos[1] + self.height // 2), surface)
 
     def draw(self, surface):
         
