@@ -2,11 +2,13 @@ import pygame
 
 # Image class
 class Image:
-    def __init__(self, name: str, pos: tuple, scale: tuple=None):
+    def __init__(self, name: str, pos: tuple, colour: tuple=(0, 0, 0), scale: tuple=None):
 
         # Initialize variables
         self.name = name
         self.pos = pos
+        self.colour = colour
+
             #self.scale = scale
 
         # Check if current image is the map

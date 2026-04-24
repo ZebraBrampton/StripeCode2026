@@ -32,6 +32,9 @@ class ParkWindow:
 
         self.clock = pygame.time.Clock()
 
+        self.overlay = pygame.Surface(self.size, pygame.SRCALPHA)
+        self.overlay.fill((0, 0, 0, 180))
+
         self.time_text = "00:00"
         self.total_sim_hours = 0
         self.total_paused_time = 0
@@ -45,11 +48,8 @@ class ParkWindow:
             self.images[ride] = Image(*self.images[ride])
 
     def startGame(self):
-        overlay = pygame.Surface(self.size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))
-        
         # Draw the overlay onto the main window
-        self.window.blit(overlay, (0, 0))
+        self.window.blit(self.overlay, (0, 0))
 
         # Draw welcome text on top of the overlay
         self.draw_text("Welcome to the Theme Park Simulator! Press any key to start.", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
@@ -85,11 +85,8 @@ class ParkWindow:
             (self.size[0] * (351/400), self.size[1] * (77/900))
         )) # Draw a red triangle above the pause button to indicate that the simulation is paused
         
-        overlay = pygame.Surface(self.size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))
-        
         # Draw the overlay onto the main window
-        self.window.blit(overlay, (0, 0))
+        self.window.blit(self.overlay, (0, 0))
 
         # Draw pause text on top of the overlay
         self.draw_text("Simulation Paused. Press any key to resume.", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
@@ -163,7 +160,7 @@ class ParkWindow:
         for ride in self.images:
 
             if self.images[ride].draw(self.window):
-                self.queue_out.put(f"S:{ride}")
+                self.queue_out.put(f"S:{ride}_{self.images[ride].colour}")
         
         # Draw timer
         self.draw_text(self.time_text, (0, 0, 0), (100, 100))
@@ -175,11 +172,8 @@ class ParkWindow:
         self.draw_pause_button()
 
     def confirm_exit(self):
-        overlay = pygame.Surface(self.size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))
-        
         # Draw the overlay onto the main window
-        self.window.blit(overlay, (0, 0))
+        self.window.blit(self.overlay, (0, 0))
         
         # Draw confirmation text on top of the overlay
         self.draw_text("Are you sure you want to exit? Press 'Y' (Yes) or 'N' (No)", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
@@ -215,11 +209,9 @@ class ParkWindow:
         self.alert_stations = [] # Reset list of stations that are having issues to empty list
 
     def confirm_restart(self):
-        overlay = pygame.Surface(self.size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))
         
         # Draw the overlay onto the main window
-        self.window.blit(overlay, (0, 0))
+        self.window.blit(self.overlay, (0, 0))
         
         # Draw confirmation text on top of the overlay
         self.draw_text("GAME OVER - Do you wish to restart? Press 'Y' (Yes) or 'N' (No)", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
