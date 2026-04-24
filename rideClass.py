@@ -190,11 +190,10 @@ class RideWindow:
         
             if wait_sold_bool == False and satisfaction_bool == False:
                 self.alert_stations.remove(self.curr_station) # Remove station from list of stations that is having issues    
+                self.queue_out.put(self.alert_stations) # Send message to main window that the issue has been fixed for the station that is having issues
 
         self.draw_wait_sold_button(wait_sold_bool) # Draw the wait time or items sold fix button based on the alert type for the station that is having issues
         self.draw_satisfaction_button(satisfaction_bool) # Draw the guest satisfaction or sales amount fix button based on the alert type for the station that is having issues
-
-        self.queue_out.put(self.alert_stations) # Send message to main window that the issue has been fixed for the station that is having issues
 
     def draw_bg(self):
         self.window.fill(self.background_colour)
