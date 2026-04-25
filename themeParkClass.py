@@ -9,7 +9,7 @@ class ParkWindow:
     STARTTIME = 10 # Start clock at 10:00 AM
     ENDTIME = 21 # End clock at 9:00 PM
 
-    def __init__(self, caption, size, pos, queue_in, queue_out, images):
+    def __init__(self, caption, size, pos, queue_in, queue_out, images): # Initialize all variables for main window
         self.caption = caption
         self.size = size
         self.pos = pos
@@ -43,11 +43,11 @@ class ParkWindow:
 
         self.alert_stations = []
 
-    def initImages(self):
+    def initImages(self): # Initializes all images using the Image Class
         for ride in self.images: # Load all the station and ride images on the main window
             self.images[ride] = Image(*self.images[ride])
 
-    def startGame(self):
+    def startGame(self): # Waits for user to input any key to begin simulation
         # Draw the overlay onto the main window
         self.window.blit(self.overlay, (0, 0))
 
@@ -77,7 +77,7 @@ class ParkWindow:
         # Calculate the total paused time and add it to the total_paused_time variable
         self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
 
-    def pause(self):
+    def pause(self): # Waits for user to input any key to resume simulation
         
         pygame.draw.polygon(self.window, (0, 0, 0), (
             (self.size[0] * (351/400), self.size[1] * (23/900)),
@@ -114,7 +114,7 @@ class ParkWindow:
         # Calculate the total paused time and add it to the total_paused_time variable
         self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
 
-    def draw_pause_button(self):
+    def draw_pause_button(self): # Draws the pause button and checks if user clicks on it
         # Hitbox of button
         self.pause_button = pygame.draw.rect(self.window, (255, 242, 204), (self.size[0] * 0.85, 10, self.size[0] * 0.1, self.size[0] * 0.1))
         
@@ -131,29 +131,17 @@ class ParkWindow:
         pygame.draw.line(self.window, (0, 0, 0), (self.size[0] * (71/80), self.size[1] * (1/36)), (self.size[0] * (71/80), self.size[1] * (1/12)), 5)
         pygame.draw.line(self.window, (0, 0, 0), (self.size[0] * (73/80), self.size[1] * (1/36)), (self.size[0] * (73/80), self.size[1] * (1/12)), 5)
 
-    def check_alert(self, msg):
-        if msg.startswith("ALERT_ADD_"):
-                alert_station = msg.split("_")[-1] # Get the station name from the message
-                
-                self.alert_stations.append(alert_station) # Add station to list of stations that are having issues
-
-        elif msg.startswith("ALERT_REMOVE_"):
-            alert_station = msg.split("_")[-1] # Get the station name from the message
-
-            if alert_station in self.alert_stations:
-                self.alert_stations.remove(alert_station) # Remove station from list of stations that are having issues
-
-    def draw_text(self, text, colour, text_pos):
+    def draw_text(self, text, colour, text_pos): # Creates and draws text onto the screen
         text_surface = self.font.render(text, True, colour)
         text_rect = text_surface.get_rect(center=text_pos)
         self.window.blit(text_surface, text_rect)
 
-    def draw_alert(self):
+    def draw_alert(self): # Takes the list and draws an alert next to each station
         for alert in self.alert_stations:
             if alert in self.images:
                 self.images[alert].draw_alert(self.window) # Call the draw_alert method for any station that is having issues to draw the alert symbol on the main window
 
-    def draw(self):
+    def draw(self): # Main drawing function to call other drawing functions
         self.window.fill((200, 200, 200))
 
         # Draw stations and rides
@@ -171,7 +159,7 @@ class ParkWindow:
         # Draw the pause button
         self.draw_pause_button()
 
-    def confirm_exit(self):
+    def confirm_exit(self): # Checks if user wants to exit the simulation, if so, end program
         # Draw the overlay onto the main window
         self.window.blit(self.overlay, (0, 0))
         
@@ -201,14 +189,14 @@ class ParkWindow:
                         self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
                         return False # No, return to the main loop
 
-    def restart(self):
+    def restart(self): # Restarts program by resetting all variables
         self.time_text = "00:00" # Reset time text
         self.total_paused_time = pygame.time.get_ticks() # Reset total paused time
         self.prev_hour = self.STARTTIME # Reset previous hour to the start time
         self.queue_out.put(self.prev_hour) # Send message to second window to reset its display to the default screen
         self.alert_stations = [] # Reset list of stations that are having issues to empty list
 
-    def confirm_restart(self):
+    def confirm_restart(self): # Checks if user wants to restart the simulation at the end
         
         # Draw the overlay onto the main window
         self.window.blit(self.overlay, (0, 0))
@@ -236,7 +224,7 @@ class ParkWindow:
                         return False # No, return to the main loop
         return False
    
-    def sim_time(self):
+    def sim_time(self): # Calculates the current simulation time
         # Get the current elapsed time
         start_offset_ms = self.STARTTIME * self.SIMULATIONHOUR
         
@@ -270,7 +258,7 @@ class ParkWindow:
         
         self.prev_hour = hour_24
     
-    def events(self):
+    def events(self): # Checks if any events occur
 
         for event in pygame.event.get():
 
@@ -286,7 +274,7 @@ class ParkWindow:
             else: # If user does not want to restart, end the program
                 self.running = False
 
-    def update(self):
+    def update(self): # Updates the current stats
         
         try:
             msg = self.queue_in.get_nowait() # Grabs the most recent message in queue
@@ -294,9 +282,6 @@ class ParkWindow:
             if type(msg) == str:
                 if msg == "QUIT":
                     self.running = False
-
-                if msg.startswith("ALERT_"):
-                    self.check_alert(msg) # Call function to check for alert and draw it on the screen if there is one
         
             elif type(msg) == list:
                 self.alert_stations = msg # Update the list of stations that are having issues if there is a change in the list from the second window
@@ -310,7 +295,7 @@ class ParkWindow:
 
         self.clock.tick(self.FPS)
 
-    def run(self):
+    def run(self): # Main running loop
         
         self.initImages()
 

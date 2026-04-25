@@ -2,7 +2,7 @@ import pygame
 
 # Image class
 class Image:
-    def __init__(self, name: str, pos: tuple, colour: tuple=(0, 0, 0), scale: tuple=None):
+    def __init__(self, name: str, pos: tuple, colour: tuple=(0, 0, 0), scale: tuple=None): # Initalizes properties of the images
 
         # Initialize variables
         self.name = name
@@ -42,12 +42,12 @@ class Image:
         except FileNotFoundError:
             self.image = None
 
-    def draw_text(self, text, colour, text_pos, surface):
+    def draw_text(self, text, colour, text_pos, surface): # Draws text onto given surface
         text_surface = pygame.font.SysFont("Arial", 18, bold=True).render(text, True, colour)
         text_rect = text_surface.get_rect(center=text_pos)
         surface.blit(text_surface, text_rect)
 
-    def hover_mouse(self, surface):
+    def hover_mouse(self, surface): # Creates a outline of image
 
         pygame.draw.line(surface, self.hover_colour, (self.pos),
                          (self.pos[0] + self.width, self.pos[1]),
@@ -65,7 +65,7 @@ class Image:
                          (self.pos),
                          5)
         
-    def check_mouse(self, surface):
+    def check_mouse(self, surface): # Checks if mouse is hovered above the image and if the user clicked on image
         action = False
         
         if self.map:
@@ -88,7 +88,7 @@ class Image:
 
         return action
 
-    def draw_alert(self, surface):
+    def draw_alert(self, surface): # Draws a blinking alert symbol next to the image
         # Flashes every 500ms (0.5 seconds)
         # Lowering time will make it flash faster, increasing time will make it flash slower
         if (pygame.time.get_ticks() // 500) % 2 == 0:
@@ -100,7 +100,7 @@ class Image:
         
         self.draw_text("ALERT", (255, 255, 255), (self.pos[0] + self.width * 1.1, self.pos[1] + self.height // 2), surface)
 
-    def draw(self, surface):
+    def draw(self, surface): # Main drawing function that returns whether image has been clicked on or not
         
         action = self.check_mouse(surface)
 

@@ -3,7 +3,7 @@ from os import environ
 
 class RideWindow:
 
-    def __init__(self, caption, size, pos, queue_in, queue_out, logs):
+    def __init__(self, caption, size, pos, queue_in, queue_out, logs): # Initialize all important variables for the window
         self.caption = caption
         self.size = size
         self.pos = pos
@@ -47,7 +47,7 @@ class RideWindow:
         self.satisfaction_button_rect = pygame.Rect(self.size[0] // 10, self.size[1] * 0.75, self.size[0] // 2, self.size[1] // 10)
         self.cta_rect = pygame.Rect(self.size[0] // 1.5, self.size[1] * 0.6, self.size[0] // 3.5, self.size[1] // 4)
 
-    def findData(self):
+    def findData(self): # Locate the specific stats of the clicked station at current hour
         str_hour = str(self.curr_hour)
 
         if (str_hour, self.curr_station) in self.logs:
@@ -59,7 +59,7 @@ class RideWindow:
             else:
                 self.station_type = "Food"
 
-    def check_alert_type(self):
+    def check_alert_type(self): # Determine which type of alert is occurring
         alert_type = [] # Checks to see the types of alerts within this station
         
         if self.station_type == "Ride":
@@ -98,7 +98,7 @@ class RideWindow:
 
         return alert_type
 
-    def detect_alert(self):
+    def detect_alert(self): # Check all stations in the hour to see if they have alerts, then send the information to main window
         self.alert_stations = [] # Resets the list of stations that are having issues every time the hour changes
 
         for key, value in self.logs.items(): # Brings the (hour, station) and (wait/sold, joy/sales, alert) values
@@ -108,12 +108,12 @@ class RideWindow:
                 
         self.queue_out.put(self.alert_stations) # Send alert list to main window with station names that is having issues
 
-    def draw_text(self, text, colour, text_pos):
+    def draw_text(self, text, colour, text_pos): # Creates and draws text onto the screen
         text_surface = self.font.render(text, True, colour)
         text_rect = text_surface.get_rect(center=text_pos)
         self.window.blit(text_surface, text_rect)
 
-    def draw_satisfaction_button(self, alert):
+    def draw_satisfaction_button(self, alert): # Draws and monitors the guest satisfaction / sales amount button
         
         if self.station_type == "Ride":
             self.fix_text = "Improve Guest Satisfaction"
@@ -152,7 +152,7 @@ class RideWindow:
             # Draw the text on the wait_time button
             self.draw_text(self.fix_text, (255, 255, 255), (self.size[0] * 0.35, self.size[1] * 0.8))
 
-    def draw_wait_sold_button(self, alert):
+    def draw_wait_sold_button(self, alert): # Draws and monitors the wait time / items sold button
         
         if self.station_type == "Ride":
             self.fix_text = "Improve Wait Times"
@@ -191,7 +191,7 @@ class RideWindow:
             # Draw the text on the wait_time button
             self.draw_text(self.fix_text, (255, 255, 255), (self.size[0] * 0.35, self.size[1] * 0.65))
 
-    def draw_cta_button(self, alert):
+    def draw_cta_button(self, alert): # Draws and monitors the dynamic CTA button
 
         if alert:
             # Draw the red fix button
@@ -249,7 +249,7 @@ class RideWindow:
             # Draw the text on the cta button
             self.draw_text("CTA", (255, 255, 255), (self.size[0] * 0.8, self.size[1] * 0.65))
 
-    def draw_alerts(self):
+    def draw_alerts(self): # Determines which buttons should be drawn and not
         wait_sold_bool = False
         satisfaction_bool = False
         cta_bool = False
@@ -283,12 +283,12 @@ class RideWindow:
         self.draw_satisfaction_button(satisfaction_bool) # Draw the guest satisfaction or sales amount fix button based on the alert type for the station that is having issues
         self.draw_cta_button(cta_bool)
 
-    def draw_bg(self):
+    def draw_bg(self): # Draws the background
         self.window.fill(self.background_colour)
 
         self.window.blit(self.overlay, (0, 0))
 
-    def draw_station_data(self):
+    def draw_station_data(self): # Determines which text should be drawn depending on the current station
         if self.station_type == "Ride":
             self.draw_text(f"Current Wait Time (minutes): {self.wait_sold}", (255, 255, 255), (self.size[0] // 2, self.size[1] // 3))
             self.draw_text(f"Current Guest Satisfaction: {self.joy_sales}", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
@@ -297,7 +297,7 @@ class RideWindow:
             self.draw_text(f"Current Items Sold: {self.wait_sold}", (255, 255, 255), (self.size[0] // 2, self.size[1] // 3))
             self.draw_text(f"Current Sales Amount: {self.joy_sales}", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
 
-    def draw(self):
+    def draw(self): # Main drawing function that calls other drawing functions
         # Background screen
         self.draw_bg()
 
@@ -313,7 +313,7 @@ class RideWindow:
         # Draw the current data
         self.draw_station_data()
 
-    def events(self):
+    def events(self): # Checks if user wants to quit pygame
 
         for event in pygame.event.get():
 
@@ -322,7 +322,7 @@ class RideWindow:
                 self.queue_out.put("QUIT")
                 self.running = False
 
-    def update(self):
+    def update(self): # Updates the current stats of the simulation
         
         try:
             msg = self.queue_in.get_nowait() # Grabs the most recent message in queue
@@ -358,7 +358,7 @@ class RideWindow:
         # Cap the frame rate to 60 FPS
         self.clock.tick(self.FPS)
 
-    def run(self):
+    def run(self): # Main running loop
 
         while self.running:
 
