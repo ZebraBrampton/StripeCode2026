@@ -39,12 +39,14 @@ class RideWindow:
         self.joy_sales = None
         self.alert_stations = []
         self.fix_text = ""
+        self.cta_type = None
         
         # Visual variables
         self.background_colour = (0, 0, 0)
         self.wait_button_rect = pygame.Rect(self.size[0] // 10, self.size[1] * 0.6, self.size[0] // 2, self.size[1] // 10)
         self.satisfaction_button_rect = pygame.Rect(self.size[0] // 10, self.size[1] * 0.75, self.size[0] // 2, self.size[1] // 10)
-  
+        self.cta_rect = pygame.Rect(self.size[0] // 1.5, self.size[1] * 0.6, self.size[0] // 3.5, self.size[1] // 4)
+
     def findData(self):
         str_hour = str(self.curr_hour)
 
@@ -61,21 +63,38 @@ class RideWindow:
         alert_type = [] # Checks to see the types of alerts within this station
         
         if self.station_type == "Ride":
-            if float(self.wait_sold) > 30: # Check if wait time is above 30 minutes
-                alert_type.append("Wait Time")
+            wait_time = float(self.wait_sold) # Convert wait time to a float for comparison
+            satisfaction = int(self.joy_sales.replace('%', '')) # Convert satisfaction percentage
+           
+            if wait_time > 50 and satisfaction < 70: # Check if wait time is above 50 minutes and satisfaction is below 70% for CTA
+                alert_type.append("Express Queue")
+           
+            elif wait_time > 35 and satisfaction < 70: # Check if wait time is above 35 minutes and satisfaction is below 70% for CTA
+                alert_type.append("Increase Staffing")
 
-            if int(self.joy_sales.replace('%', '')) < 75: # Check if joy is below 75%
-                alert_type.append("Guest Satisfaction")
+            else:
+                if wait_time > 30: # Check if wait time is above 30 minutes
+                    alert_type.append("Wait Time")
+
+                if satisfaction < 75: # Check if satisfaction is below 75%
+                    alert_type.append("Guest Satisfaction")
         
         elif self.station_type == "Food":
             items_sold = int(self.wait_sold) # Convert items sold to an integer for comparison
             sales_amount = float(self.joy_sales.replace('$', '')) # Convert sales amount to a float for comparison
 
-            if items_sold < 20: # Check if items sold is below 20
-                alert_type.append("Items Sold")
+            if items_sold > 20 and sales_amount < 100: # Check if more than 20 items sold and less than $100 in sales for CTA
+                alert_type.append("Flash Sale")
+           
+            elif items_sold > 30 and sales_amount < 200: # Check if more than 30 items sold and less than $200 in sales for CTA
+                alert_type.append("Fast-Pass")
 
-            if sales_amount < 150: # Check if sales is below $150
-                alert_type.append("Sales Amount")
+            else:
+                if items_sold < 20: # Check if items sold is below 20
+                    alert_type.append("Items Sold")
+
+                if sales_amount < 150: # Check if sales is below $150
+                    alert_type.append("Sales Amount")
 
         return alert_type
 
@@ -172,28 +191,97 @@ class RideWindow:
             # Draw the text on the wait_time button
             self.draw_text(self.fix_text, (255, 255, 255), (self.size[0] * 0.35, self.size[1] * 0.65))
 
+    def draw_cta_button(self, alert):
+
+        if alert:
+            # Draw the red fix button
+            self.fix = pygame.draw.rect(self.window, (255, 0, 0), self.cta_rect)
+            
+            # Draw the text on the fix button
+            self.draw_text(self.cta_type, (255, 255, 255), (self.size[0] * 0.8, self.size[1] * 0.65))
+
+            pos = pygame.mouse.get_pos()
+
+            if self.fix.collidepoint(pos):
+                pygame.draw.rect(self.window, (255, 100, 100), self.cta_rect)
+
+                self.draw_text(self.cta_type, (255, 255, 255), (self.size[0] * 0.8, self.size[1] * 0.65))
+
+                if pygame.mouse.get_pressed()[0] == 1:
+                    
+                    if self.cta_type == "Express Queue":
+                        updated_data = float(self.wait_sold) // 2 # Decrease wait time by halving it
+                        self.wait_sold = f"{updated_data:.1f}" # Update wait_sold variable
+
+                        updated_data = int(self.joy_sales.replace('%', '')) + 15
+                        self.joy_sales = f"{updated_data}%"
+
+                    
+                    elif self.cta_type == "Increase Staffing":
+                        updated_data = float(self.wait_sold) - 20 # Decrease wait time by halving it
+                        self.wait_sold = f"{updated_data:.1f}" # Update wait_sold variable
+
+                        updated_data = int(self.joy_sales.replace('%', '')) + 10
+                        self.joy_sales = f"{updated_data}%"
+                    
+
+                    elif self.cta_type == "Flash Sale":
+                        updated_data = int(self.wait_sold) + 10 # Increase items sold by 10
+                        self.wait_sold = f"{updated_data}" # Update wait_sold variable
+
+                        updated_data = float(self.joy_sales.replace('$', '')) * 1.5 # Increase sales amount
+                        self.joy_sales = f"${updated_data:.2f}" # Update wait_sold variable
+
+
+                    elif self.cta_type == "Fast-Pass":
+                        updated_data = int(self.wait_sold) + 5 # Increase items sold
+                        self.wait_sold = f"{updated_data}" # Update wait_sold variable
+
+                        updated_data = float(self.joy_sales.replace('$', '')) * 1.3 # Increase sales amount
+                        self.joy_sales = f"${updated_data:.2f}" # Update wait_sold variable
+
+                    self.cta_type = ""
+
+        else:
+            # Draw the greyed out cta button
+            pygame.draw.rect(self.window, (100, 100, 100), self.cta_rect)
+
+            # Draw the text on the cta button
+            self.draw_text("CTA", (255, 255, 255), (self.size[0] * 0.8, self.size[1] * 0.65))
+
     def draw_alerts(self):
         wait_sold_bool = False
         satisfaction_bool = False
+        cta_bool = False
+        self.cta_type = None
 
         if self.curr_station in self.alert_stations:
             
             # Retrieve the types of alerts for the station that is having problems
             alerts = self.check_alert_type()
 
-            # Draw the appropriate fix buttons based on the types of alerts for the station that is having problems
-            if "Wait Time" in alerts or "Items Sold" in alerts:
-                wait_sold_bool = True
+            if alerts and (("Wait Time" not in alerts) and
+                           ("Items Sold" not in alerts) and
+                           ("Guest Satisfaction" not in alerts) and
+                           ("Sales Amount" not in alerts)):
+                cta_bool = True
+                self.cta_type = alerts[0]
 
-            if "Guest Satisfaction" in alerts or "Sales Amount" in alerts:
-                satisfaction_bool = True
-        
-            if wait_sold_bool == False and satisfaction_bool == False:
+            else:
+                # Draw the appropriate fix buttons based on the types of alerts for the station that is having problems
+                if "Wait Time" in alerts or "Items Sold" in alerts:
+                    wait_sold_bool = True
+
+                if "Guest Satisfaction" in alerts or "Sales Amount" in alerts:
+                    satisfaction_bool = True
+
+            if wait_sold_bool == False and satisfaction_bool == False and cta_bool == False:
                 self.alert_stations.remove(self.curr_station) # Remove station from list of stations that is having issues    
                 self.queue_out.put(self.alert_stations) # Send message to main window that the issue has been fixed for the station that is having issues
 
         self.draw_wait_sold_button(wait_sold_bool) # Draw the wait time or items sold fix button based on the alert type for the station that is having issues
         self.draw_satisfaction_button(satisfaction_bool) # Draw the guest satisfaction or sales amount fix button based on the alert type for the station that is having issues
+        self.draw_cta_button(cta_bool)
 
     def draw_bg(self):
         self.window.fill(self.background_colour)
