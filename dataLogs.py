@@ -24,11 +24,11 @@ SALES_INDEX=3
        
 
 
-ridesLog = open("Galaxy Rides Log data.csv")
+ridesLog = open("Logs/Galaxy Rides Log data.txt")
 grLines = ridesLog.readlines()
 
 
-concesLog=open("Galaxy Concessios log data.csv")
+concesLog=open("Logs/Galaxy Concessions log data.txt")
 gcLines=concesLog.readlines()
 
 
@@ -99,7 +99,7 @@ def falsify_Key(key):
 
 def falsify_allAlerts():
     for key,value in combinedDict.items():
-        print (value)
+        print(value)
         x,y,alert_value = value
         if alert_value == True:
             combinedDict[key]= (x,y,False)
@@ -108,14 +108,27 @@ def falsify_allAlerts():
 
 if __name__ == "__main__":
     #falsify_allAlerts()
-    print("#####################################")
-    print(combinedDict)
+    # print("#####################################")
+    # print(combinedDict)
 
 
         
-    key = ('12:00', 'Rocket Slingshot')
+    # key = ('12:00', 'Rocket Slingshot')
 
 
-    #falsify_Key(key)
-    #print(combinedDict)
+    # falsify_Key(key)
+    # print(combinedDict)
 
+    test_hour = '11'
+    station = 'Rocket Slingshot'
+
+    if (test_hour, station) in combinedDict:
+        print("Key exists in combinedDict")
+        value = combinedDict[(test_hour, station)]
+        print(value)
+
+    print("#####################################")
+    for key,value in combinedDict.items():
+        if test_hour in key and value[2] == True:
+            print(key)
+            print(value)
