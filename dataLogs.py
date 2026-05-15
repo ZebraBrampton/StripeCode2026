@@ -24,11 +24,11 @@ SALES_INDEX=3
        
 
 
-ridesLog = open("Logs/Galaxy Rides Log data.txt")
+ridesLog = open("Galaxy Rides Log data.csv")
 grLines = ridesLog.readlines()
 
 
-concesLog=open("Logs/Galaxy Concessions log data.txt")
+concesLog=open("Galaxy Concessions log data.csv")
 gcLines=concesLog.readlines()
 
 
