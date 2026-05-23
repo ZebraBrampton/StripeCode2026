@@ -41,6 +41,9 @@ class Image:
 
         except FileNotFoundError:
             self.image = None
+        
+        # Audio Initialization
+        self.clickSFX = pygame.mixer.Sound("Audio/ClickSFX.mp3")
 
     def draw_text(self, text, colour, text_pos, surface): # Draws text onto given surface
         text_surface = pygame.font.SysFont("Arial", 18, bold=True).render(text, True, colour)
@@ -80,6 +83,7 @@ class Image:
             self.hover_mouse(surface)
 
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clickSFX.play() # Play click sound effect when image is clicked
                 self.clicked = True
                 action = True
 

@@ -5,7 +5,8 @@ from imageClass import Image
 
 class ParkWindow:
 
-    SIMULATIONHOUR = 1000 * 10 # One simulation hour is 10 seconds (10,000ms)
+    REALTIMESEC = 1 # One simulation hour is 10 seconds
+    SIMULATIONHOUR = 1000 * REALTIMESEC # Convert REALTIMESEC to milliseconds
     STARTTIME = 10 # Start clock at 10:00 AM
     ENDTIME = 21 # End clock at 9:00 PM
 
@@ -19,28 +20,35 @@ class ParkWindow:
         
         self.running = True
         self.FPS = 60
+        
+        environ['SDL_VIDEO_WINDOW_POS'] = f"{pos[0]}, {pos[1]}" # Change the position of window
 
-        environ['SDL_VIDEO_WINDOW_POS'] = f"{pos[0]}, {pos[1]}"
+        pygame.init() # Initialize pygame and all its modules
 
-        pygame.init()
+        self.window = pygame.display.set_mode(self.size) # Create the main window with the specified size
 
-        self.window = pygame.display.set_mode(self.size)
+        pygame.display.set_caption(self.caption) # Set the caption of the window to the specified caption
 
-        pygame.display.set_caption(self.caption)
+        self.font = pygame.font.SysFont("Arial", 18, bold=True) # Create a font object to use for drawing text
 
-        self.font = pygame.font.SysFont("Arial", 18, bold=True)
+        self.clock = pygame.time.Clock() # Create a clock object to control the frame rate of the simulation
 
-        self.clock = pygame.time.Clock()
+        self.overlay = pygame.Surface(self.size, pygame.SRCALPHA) # Create a transparent surface to use as an overlay for pause and confirmation screens
+        self.overlay.fill((0, 0, 0, 180)) # Fill the overlay with a semi-transparent black color (the last value is the alpha channel for transparency)
 
-        self.overlay = pygame.Surface(self.size, pygame.SRCALPHA)
-        self.overlay.fill((0, 0, 0, 180))
-
+        # Initialize variables for time tracking and station alerts
         self.time_text = "00:00"
         self.total_sim_hours = 0
         self.total_paused_time = 0
         self.prev_hour = self.STARTTIME
         self.queue_out.put(self.prev_hour)
 
+        # Audio initialization
+        pygame.mixer.music.load("Audio/BGM.mp3")
+        pygame.mixer.music.set_volume(0.5)
+
+
+        # List to keep track of stations that are having issues to draw alert symbols on the main window
         self.alert_stations = []
 
     def initImages(self): # Initializes all images using the Image Class
@@ -98,6 +106,8 @@ class ParkWindow:
 
         self.initial_paused_time = pygame.time.get_ticks() # Start counting paused time until the user presses a key to resume the simulation so that the paused time will not be included in the simulation time calculation
 
+        pygame.mixer.music.pause() # Pause the background music when the simulation is paused
+
         # Event loop to wait for user input
         while waiting:
             for event in pygame.event.get():
@@ -107,6 +117,7 @@ class ParkWindow:
                     self.running = False
                 if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN: # If user presses any key or clicks the mouse button
                     waiting = False
+                    pygame.mixer.music.unpause() # Resume the background music when the simulation is resumed
         
         # Take the final paused time after the user presses a key to resume
         self.final_paused_time = pygame.time.get_ticks()
@@ -196,6 +207,8 @@ class ParkWindow:
         self.queue_out.put(self.prev_hour) # Send message to second window to reset its display to the default screen
         self.alert_stations = [] # Reset list of stations that are having issues to empty list
 
+        pygame.mixer.music.play(-1) # Restart the background music in a loop (-1 means it will loop infinetly)
+
     def confirm_restart(self): # Checks if user wants to restart the simulation at the end
         
         # Draw the overlay onto the main window
@@ -209,6 +222,8 @@ class ParkWindow:
         
         # Wait for the user's response
         waiting = True
+
+        pygame.mixer.music.stop() # Stop the background music when the simulation is over
 
         while waiting:
             for event in pygame.event.get():
@@ -225,7 +240,7 @@ class ParkWindow:
         return False
    
     def sim_time(self): # Calculates the current simulation time
-        # Get the current elapsed time
+        # Get the current time
         start_offset_ms = self.STARTTIME * self.SIMULATIONHOUR
         
         total_milis = pygame.time.get_ticks() + start_offset_ms - self.total_paused_time
@@ -300,6 +315,8 @@ class ParkWindow:
         self.initImages()
 
         self.startGame()
+
+        pygame.mixer.music.play(-1) # Play the background music in a loop (-1 means it will loop infinetly)
 
         while self.running:
 
