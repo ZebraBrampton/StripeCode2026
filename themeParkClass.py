@@ -5,7 +5,7 @@ from imageClass import Image
 
 class ParkWindow:
 
-    REALTIMESEC = 1 # One simulation hour is 10 seconds
+    REALTIMESEC = 10 # One simulation hour is 10 seconds
     SIMULATIONHOUR = 1000 * REALTIMESEC # Convert REALTIMESEC to milliseconds
     STARTTIME = 10 # Start clock at 10:00 AM
     ENDTIME = 21 # End clock at 9:00 PM
@@ -46,6 +46,10 @@ class ParkWindow:
         # Audio initialization
         pygame.mixer.music.load("Audio/BGM.mp3")
         pygame.mixer.music.set_volume(0.5)
+
+        self.pauseSFX = pygame.mixer.Sound("Audio/PauseSFX.mp3")
+        self.restartSFX = pygame.mixer.Sound("Audio/RestartSFX.mp3")
+        self.exitSFX = pygame.mixer.Sound("Audio/ExitSFX.mp3")
 
 
         # List to keep track of stations that are having issues to draw alert symbols on the main window
@@ -107,6 +111,8 @@ class ParkWindow:
         self.initial_paused_time = pygame.time.get_ticks() # Start counting paused time until the user presses a key to resume the simulation so that the paused time will not be included in the simulation time calculation
 
         pygame.mixer.music.pause() # Pause the background music when the simulation is paused
+
+        self.pauseSFX.play() # Play the pause sound effect when the simulation is paused
 
         # Event loop to wait for user input
         while waiting:
@@ -184,6 +190,10 @@ class ParkWindow:
         waiting = True
         self.initial_paused_time = pygame.time.get_ticks()
 
+        pygame.mixer.music.pause() # Pause the background music when the user is deciding whether to exit or not
+
+        self.exitSFX.play() # Play the exit sound effect when the user is deciding whether to exit or not
+
         while waiting:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -233,6 +243,7 @@ class ParkWindow:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
                         self.queue_out.put("RESTART") # Put "RESTART" into communication pipe so second window will reset its data and return to default screen
+                        self.restartSFX.play() # Play the restart sound effect when the simulation is over
                         return True  # Yes, restart the program
                     
                     elif event.key == pygame.K_n:

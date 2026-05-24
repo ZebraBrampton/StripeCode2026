@@ -30,7 +30,6 @@ class RideWindow:
         self.overlay = pygame.Surface(self.size, pygame.SRCALPHA)
         self.overlay.fill((0, 0, 0, 100))
 
-
         # Variables for data
         self.curr_station = "N/A"
         self.curr_hour = 10
@@ -46,6 +45,9 @@ class RideWindow:
         self.wait_button_rect = pygame.Rect(self.size[0] // 10, self.size[1] * 0.6, self.size[0] // 2, self.size[1] // 10)
         self.satisfaction_button_rect = pygame.Rect(self.size[0] // 10, self.size[1] * 0.75, self.size[0] // 2, self.size[1] // 10)
         self.cta_rect = pygame.Rect(self.size[0] // 1.5, self.size[1] * 0.6, self.size[0] // 3.5, self.size[1] // 4)
+
+        # Audio initialization
+        self.fixSFX = pygame.mixer.Sound("Audio/FixSFX.mp3")
 
     def findData(self): # Locate the specific stats of the clicked station at current hour
         str_hour = str(self.curr_hour)
@@ -136,6 +138,8 @@ class RideWindow:
                 self.draw_text(self.fix_text, (255, 255, 255), (self.size[0] * 0.35, self.size[1] * 0.8))
 
                 if pygame.mouse.get_pressed()[0] == 1:
+                    
+                    self.fixSFX.play() # Play the fix sound effect when the satisfaction/sales fix button is clicked
 
                     if self.station_type == "Ride":
                         updated_data = int(self.joy_sales.replace('%', '')) + 10 # Increase satisfaction percentage by 10% when fix button is clicked for ride station
@@ -176,6 +180,8 @@ class RideWindow:
 
                 if pygame.mouse.get_pressed()[0] == 1:
                     
+                    self.fixSFX.play() # Play the fix sound effect when the wait time/items sold fix button is clicked
+
                     if self.station_type == "Ride":
                         updated_data = float(self.wait_sold) - 10 # Decrease wait time by 10 minutes when fix button is clicked for ride station
                         self.wait_sold = f"{updated_data:.1f}" # Update wait_sold variable
@@ -209,6 +215,8 @@ class RideWindow:
 
                 if pygame.mouse.get_pressed()[0] == 1:
                     
+                    self.fixSFX.play() # Play the fix sound effect when the CTA button is clicked
+
                     if self.cta_type == "Express Queue":
                         updated_data = float(self.wait_sold) // 2 # Decrease wait time by halving it
                         self.wait_sold = f"{updated_data:.1f}" # Update wait_sold variable
