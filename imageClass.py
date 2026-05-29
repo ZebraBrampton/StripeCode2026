@@ -24,33 +24,31 @@ class Image:
             self.image = pygame.image.load(f"Images/{name}.png").convert_alpha()
 
             self.width = self.image.get_width()
-            #self.width = int( self.width * (scale[0] / 100) )
 
             self.height = self.image.get_height()
-            #self.height = int( self.width * (scale[1] / 100) )
 
-            self.image = pygame.transform.scale(self.image, (self.width, self.height))
+            self.image = pygame.transform.scale(self.image, (self.width, self.height)) # Change the scale of the image
 
-            self.rect = self.image.get_rect()
+            self.rect = self.image.get_rect() # Get the rectangle of the image for mouse collision detection
 
             self.rect.topleft = (self.pos) # (x, y)
 
-            self.clicked = False
+            self.clicked = False # Variable to check if the image has been clicked on or not, used to prevent multiple clicks from one click
 
-            self.hover_colour = (255, 0, 0)
+            self.hover_colour = (255, 0, 0) # Colour of the outline when the mouse is hovered above the image
 
-        except FileNotFoundError:
-            self.image = None
+        except FileNotFoundError: # If the image file is not found
+            self.image = None # Set image to None if file is not found
         
         # Audio Initialization
         self.clickSFX = pygame.mixer.Sound("Audio/ClickSFX.mp3")
 
     def draw_text(self, text, colour, text_pos, surface): # Draws text onto given surface
-        text_surface = pygame.font.SysFont("Arial", 18, bold=True).render(text, True, colour)
-        text_rect = text_surface.get_rect(center=text_pos)
-        surface.blit(text_surface, text_rect)
+        text_surface = pygame.font.SysFont("Arial", 18, bold=True).render(text, True, colour) # Create a text surface using the given text and colour
+        text_rect = text_surface.get_rect(center=text_pos) # Get the rectangle of the text surface and set its center to the given text position
+        surface.blit(text_surface, text_rect) # Draw the text surface onto the given surface at the position of the text rectangle
 
-    def hover_mouse(self, surface): # Creates a outline of image
+    def hover_mouse(self, surface): # Creates a outline of image when mouse is hovered above the image
 
         pygame.draw.line(surface, self.hover_colour, (self.pos),
                          (self.pos[0] + self.width, self.pos[1]),
@@ -69,10 +67,10 @@ class Image:
                          5)
         
     def check_mouse(self, surface): # Checks if mouse is hovered above the image and if the user clicked on image
-        action = False
+        action = False # If user clicked on the image
         
-        if self.map:
-            return action
+        if self.map: # If the image is the map, there will be no clicking or hovering effects
+            return action # Return False if the image is the map
 
         # Get mouse pos
         pos = pygame.mouse.get_pos()
@@ -80,35 +78,37 @@ class Image:
         # Check mouseover and clicked conditions
         if self.rect.collidepoint(pos):
             
-            self.hover_mouse(surface)
+            self.hover_mouse(surface) # Call the hover mouse function to create the outline when mouse is hovered above the image
 
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False: # If the left mouse button is being pressed and the image has not already been clicked from that click
                 self.clickSFX.play() # Play click sound effect when image is clicked
-                self.clicked = True
-                action = True
+                self.clicked = True # Set clicked to True to prevent multiple clicks from one click
+                action = True # Set action to True if the image has been clicked on
 
-        if pygame.mouse.get_pressed()[0] == 0:
-            self.clicked = False
+        if pygame.mouse.get_pressed()[0] == 0: # If the mouse button is not being pressed, reset clicked to False to allow for clicking again
+            self.clicked = False # Reset clicked to False when mouse button is released to allow for clicking again
 
-        return action
+        return action # Return whether the image has been clicked on or not
 
     def draw_alert(self, surface): # Draws a blinking alert symbol next to the image
         # Flashes every 500ms (0.5 seconds)
         # Lowering time will make it flash faster, increasing time will make it flash slower
-        if (pygame.time.get_ticks() // 500) % 2 == 0:
+        if (pygame.time.get_ticks() // 500) % 2 == 0: # (total time in milliseconds // 500) % 2  will alternate between True and False every 500ms since % operator returns the remainder in a division operation
+            # Draw a red triangle as the alert symbol next to the image
             pygame.draw.polygon(surface, (255, 0, 0), [
                 (self.pos[0] + self.width * 1.1, self.pos[1] + self.height // 2),
                 (self.pos[0] + self.width * 1.1 - 10, self.pos[1] + self.height // 3),
                 (self.pos[0] + self.width * 1.1 + 10, self.pos[1] + self.height // 3)
             ])
         
+        # Draw the text "ALERT" next to the triangle
         self.draw_text("ALERT", (255, 255, 255), (self.pos[0] + self.width * 1.1, self.pos[1] + self.height // 2), surface)
 
     def draw(self, surface): # Main drawing function that returns whether image has been clicked on or not
         
-        action = self.check_mouse(surface)
+        action = self.check_mouse(surface) # Check if the image has been clicked on and store the result in action variable
 
         # Draw image on screen
         surface.blit(self.image, (self.rect.x, self.rect.y))
 
-        return action
+        return action # Return whether the image has been clicked on or not
