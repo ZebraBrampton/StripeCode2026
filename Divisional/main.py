@@ -23,7 +23,7 @@ def start_ride_window(caption, size, pos, queue_in, queue_out, logs):
 if __name__ == "__main__":
 
     # Create a dictionary of all images
-    # Name: (Filename, (x, y), True/False,(r,g,b)) <- (Name, Position, Ride, Colour)
+    # Name: (Filename, (x, y), True/False,(r,g,b)) <- (Name, Position, Colour)
     images = {
 
         "Map" : ("Map", (0, 0), (0, 0, 0)),

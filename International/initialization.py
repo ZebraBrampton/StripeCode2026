@@ -3,23 +3,33 @@
 config = {
     'parkWindow' : {
         'caption' : 'Park',
-        'width' : 800,
-        'height' : 900,
-        'pos_x' : 260,
-        'pos_y' : 25
+        'size' : (800, 900),
+        'pos' : (260, 25),
     },
 
     'rideWindow' : {
         'caption' : 'Ride',
-        'width' : 400,
-        'height' : 900,
-        'pos_x' : 1070,
-        'pos_y' : 25
+        'size' : (400, 900),
+        'pos' : (1070, 25)
     },
     
     'images' : {
-        # Filename: ((x, y), (r,g,b)) <- (Name, Position, Colour)
-        "test_map" : ((0, 0), (0, 0, 0)),
-        "test_ride" : ((454, 647), (159, 197, 232)),
+        # Name: (Name, File, (x, y), True/False,(r,g,b)) <- (Name, Position, Colour)
+        "Map" : ("Map", "Images/test_map.png", (0, 0), (0, 0, 0)),
+        "Ride" : ("Map", "Images/test_ride.png", (454, 647), (159, 197, 232)),
+    },
+
+    'simulation' : {
+        'interval' : 10, # One simulation hour is 10 seconds
+        'startHour' : 10, # Start clock at 10:00 AM
+        'endHour' : 21 # End clock at 9:00 PM
+    },
+
+    'audio' : {
+        'bgm' : 'Audio/BGM.mp3',
+        'click' : 'Audio/ClickSFX.mp3',
+        'pause' : 'Audio/PauseSFX.mp3',
+        'restart' : 'Audio/RestartSFX.mp3',
+        'exit' : 'Audio/ExitSFX.mp3'
     }
 }

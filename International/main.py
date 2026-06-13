@@ -10,7 +10,7 @@ from secondWindow import RideWindow
 from initialization import config
 
 # Function to start the main window for theme park using theme_park process
-def start_theme_park(caption, size, pos, queue_in, queue_out, images):
+def start_park_window(caption, size, pos, queue_in, queue_out, images):
     park_window = ParkWindow(caption, size, pos, queue_in, queue_out, images)
     park_window.run()
 
@@ -21,55 +21,57 @@ def start_ride_window(caption, size, pos, queue_in, queue_out, logs):
 
 # Run program if this file is being run directly
 if __name__ == "__main__":
-
+    
     # Create IN/OUT queues for Theme Park
     main_to_park = Queue()
     park_to_main = Queue()
 
+    # Create a dedicated kwargs dictionary for the park process
+    park_kwargs = {
+        **config['parkWindow'],
+        'queue_in': main_to_park,
+        'queue_out': park_to_main,
+        'images': config['images']
+    }
+
     # Create IN/OUT queues for Station
     main_to_ride = Queue()
     ride_to_main = Queue()
+    
+    # Create a dedicated kwargs dictionary for the theme park process
+    ride_kwargs = {
+        **config['rideWindow'],
+        'queue_in': main_to_ride,
+        'queue_out': ride_to_main
+    }
 
     # Create Main Window with communcation_queue
-    theme_park = Process(
-        target=start_theme_park, # Target function to start the main window for theme park
-        args=(  # Parameters: (caption, size, pos, queue_in, queue_out, images)
-            config['parkWindow']['caption'],
-            (config['parkWindow']['width'], config['parkWindow']['height']), 
-            (config['parkWindow']['pos_x'], config['parkWindow']['pos_y']), 
-            main_to_park, 
-            park_to_main, 
-            config['images']
-            )
+    park_process = Process(
+        target=start_park_window, # Target function to start the main window for theme park
+        kwargs=park_kwargs
     )
 
     # Create Main Window with communcation_queue
-    ride_park = Process(
+    ride_process = Process(
         target=start_ride_window, # Target function to start the main window for theme park
-        args=(  # Parameters: (caption, size, pos, queue_in, queue_out)
-            config['rideWindow']['caption'],
-            (config['rideWindow']['width'], config['parkWindow']['height']), 
-            (config['rideWindow']['pos_x'], config['parkWindow']['pos_y']), 
-            main_to_ride, 
-            ride_to_main,
-            )
+        kwargs=ride_kwargs
     )
-
+    
     # Begin both processes to start windows
-    ride_park.start()
-    theme_park.start()
+    park_process.start()
+    ride_process.start()
 
     try: # Main loop to keep program running and route messages between windows
-        while theme_park.is_alive(): # Check if the main window is currently open
+        while park_process.is_alive(): # Check if the main window is currently open
             
-            # Route messages FROM Park TO Station
+            # Route messages FROM Park TO Ride
             try:
                 msg = park_to_main.get_nowait() # Grabs the most recent message in queue
                 main_to_ride.put(msg)
             except:
                 pass
     
-            # Route messages FROM Station TO Park
+            # Route messages FROM Ride TO Park
             try:
                 msg = ride_to_main.get_nowait() # Grabs the most recent message in queue
                 main_to_park.put(msg)
@@ -83,9 +85,10 @@ if __name__ == "__main__":
         print("\nEnding Program...")
         
         print("\nClosing Ride Window Process...")
-        ride_park.terminate()
+        ride_process.terminate()
         print("\Ride Window is closed.")
 
         print("\nClosing Park Window Process...")
-        theme_park.terminate()
+        park_process.terminate()
         print("\nPark Window is closed.")
+        

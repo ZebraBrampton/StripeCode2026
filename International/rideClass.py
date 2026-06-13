@@ -1,8 +1,8 @@
 import pygame
 
-# Image class
+# Rides class
 class Rides:
-    def __init__(self, name: str, pos: tuple, scale: tuple, colour: tuple=(0, 0, 0)): # Initalizes properties of the images
+    def __init__(self, name: str, file: str, pos: tuple, scale: tuple, colour: tuple=(0, 0, 0)): # Initalizes properties of the images
 
         # Initialize variables
         self.name = name
@@ -20,7 +20,7 @@ class Rides:
 
         # Initialize the image using initialized variables
         try:
-            self.image = pygame.image.load(f"Images/{name}.png").convert_alpha()
+            self.image = pygame.image.load(file).convert_alpha()
 
             self.image = pygame.transform.scale(self.image, self.scale) # Change the scale of the image
 

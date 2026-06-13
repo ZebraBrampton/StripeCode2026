@@ -4,10 +4,6 @@ from os import environ
 from rideClass import Rides
 
 class ParkWindow:
-    REALTIMESEC = 10 # One simulation hour is 10 seconds
-    SIMULATIONHOUR = 1000 * REALTIMESEC # Convert REALTIMESEC to milliseconds
-    STARTTIME = 10 # Start clock at 10:00 AM
-    ENDTIME = 21 # End clock at 9:00 PM
 
     def __init__(self, caption, size, pos, queue_in, queue_out, images): # Initialize all variables for main window
         self.caption = caption
@@ -42,6 +38,10 @@ class ParkWindow:
         self.prev_hour = self.STARTTIME
         self.queue_out.put(self.prev_hour)
 
+        # Initialize Images
+        for ride in self.images:
+            self.images[ride] = Rides(*self.images[ride])
+
         # Audio initialization
         pygame.mixer.music.load("Audio/BGM.mp3")
         pygame.mixer.music.set_volume(0.5)
@@ -50,10 +50,10 @@ class ParkWindow:
         self.restartSFX = pygame.mixer.Sound("Audio/RestartSFX.mp3")
         self.exitSFX = pygame.mixer.Sound("Audio/ExitSFX.mp3")
 
-
-    def initImages(self): # Initializes all images using the Image Class
-        for ride in self.images: # Load all the station and ride images on the main window
-            self.images[ride] = Rides(*self.images[ride])
+    def draw_text(self, text, colour, text_pos): # Creates and draws text onto the screen
+            text_surface = self.font.render(text, True, colour)
+            text_rect = text_surface.get_rect(center=text_pos)
+            self.window.blit(text_surface, text_rect)
 
     def startGame(self): # Waits for user to input any key to begin simulation
         # Draw the overlay onto the main window
@@ -84,3 +84,22 @@ class ParkWindow:
 
         # Calculate the total paused time and add it to the total_paused_time variable
         self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
+
+    def draw(self): # Main drawing function to call other drawing functions
+            self.window.fill((200, 200, 200))
+
+    def run(self): # Main running loop
+
+            self.startGame()
+
+            pygame.mixer.music.play(-1) # Play the background music in a loop (-1 means it will loop infinetly)
+
+            while self.running:
+
+                self.draw()
+
+                self.events()
+
+                self.update()
+            
+            pygame.quit()
