@@ -26,27 +26,27 @@ if __name__ == "__main__":
     # Name: (Filename, (x, y), True/False,(r,g,b)) <- (Name, Position, Ride, Colour)
     images = {
 
-        "Map" : ("Map", (0, 0), "FALSE", (0, 0, 0)),
+        "Map" : ("Map", (0, 0), (0, 0, 0)),
 
-        "Lazy River" : ("Lazy River", (454, 647), "TRUE", (159, 197, 232)),
+        "Lazy River" : ("Lazy River", (454, 647), (159, 197, 232)),
 
-        "Nebula Spinner" : ("Nebula Spinner", (459, 8), "TRUE", (249, 203, 156)),
+        "Nebula Spinner" : ("Nebula Spinner", (459, 8), (249, 203, 156)),
 
-        "Pixel Arcade" : ("Pixel Arcade", (25, 532), "TRUE", (0, 255, 255)),
+        "Pixel Arcade" : ("Pixel Arcade", (25, 532), (0, 255, 255)),
 
-        "Rocket Slingshot" : ("Rocket Slingshot", (189, 8), "TRUE", (255, 229, 153)),
+        "Rocket Slingshot" : ("Rocket Slingshot", (189, 8), (255, 229, 153)),
 
-        "Splashing Mountain" : ("Splashing Mountain", (478, 180), "TRUE", (147, 196, 125)),
+        "Splashing Mountain" : ("Splashing Mountain", (478, 180), (147, 196, 125)),
 
-        "Titan Coaster" : ("Titan Coaster", (17, 275), "TRUE", (139, 198, 252)),
+        "Titan Coaster" : ("Titan Coaster", (17, 275), (139, 198, 252)),
 
-        "Hydration Station" : ("Hydration Station", (450, 524), "FALSE", (164, 194, 244)),
+        "Hydration Station" : ("Hydration Station", (450, 524), (164, 194, 244)),
 
-        "Pixel Popcorn" : ("Pixel Popcorn", (253, 180), "FALSE", (230, 145, 56)),
+        "Pixel Popcorn" : ("Pixel Popcorn", (253, 180), (230, 145, 56)),
 
-        "Quantum Cafe" : ("Quantum Cafe", (176, 673), "FALSE", (142, 124, 195)),
+        "Quantum Cafe" : ("Quantum Cafe", (176, 673), (142, 124, 195)),
 
-        "The Sugar Shack" : ("The Sugar Shack", (244, 523), "FALSE", (233, 120, 93))
+        "The Sugar Shack" : ("The Sugar Shack", (244, 523), (233, 120, 93))
 
     }
 

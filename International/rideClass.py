@@ -1,7 +1,7 @@
 import pygame
 
 # Image class
-class rides:
+class Rides:
     def __init__(self, name: str, pos: tuple, scale: tuple, colour: tuple=(0, 0, 0)): # Initalizes properties of the images
 
         # Initialize variables
