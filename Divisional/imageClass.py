@@ -2,11 +2,12 @@ import pygame
 
 # Image class
 class Image:
-    def __init__(self, name: str, pos: tuple, colour: tuple=(0, 0, 0), scale: tuple=None): # Initalizes properties of the images
+    def __init__(self, name: str, pos: tuple, ride: bool, colour: tuple=(0, 0, 0)): # Initalizes properties of the images
 
         # Initialize variables
         self.name = name
         self.pos = pos
+        self.ride = ride
         self.colour = colour
 
             #self.scale = scale
@@ -89,6 +90,11 @@ class Image:
             self.clicked = False # Reset clicked to False when mouse button is released to allow for clicking again
 
         return action # Return whether the image has been clicked on or not
+
+
+    def draw_signal(self, surface): # Draws a ride impact symbol
+        pass
+
 
     def draw_alert(self, surface): # Draws a blinking alert symbol next to the image
         # Flashes every 500ms (0.5 seconds)
