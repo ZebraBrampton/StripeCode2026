@@ -22,11 +22,7 @@ class rides:
         try:
             self.image = pygame.image.load(f"Images/{name}.png").convert_alpha()
 
-            self.width = self.image.get_width()
-
-            self.height = self.image.get_height()
-
-            self.image = pygame.transform.scale(self.image, (self.width, self.height)) # Change the scale of the image
+            self.image = pygame.transform.scale(self.image, self.scale) # Change the scale of the image
 
             self.rect = self.image.get_rect() # Get the rectangle of the image for mouse collision detection
 
@@ -91,20 +87,6 @@ class rides:
 
     def draw_signal(self, surface): # Draws a ride impact symbol
         pass
-
-    def draw_alert(self, surface): # Draws a blinking alert symbol next to the image
-        # Flashes every 500ms (0.5 seconds)
-        # Lowering time will make it flash faster, increasing time will make it flash slower
-        if (pygame.time.get_ticks() // 500) % 2 == 0: # (total time in milliseconds // 500) % 2  will alternate between True and False every 500ms since % operator returns the remainder in a division operation
-            # Draw a red triangle as the alert symbol next to the image
-            pygame.draw.polygon(surface, (255, 0, 0), [
-                (self.pos[0] + self.width * 1.1, self.pos[1] + self.height // 2),
-                (self.pos[0] + self.width * 1.1 - 10, self.pos[1] + self.height // 3),
-                (self.pos[0] + self.width * 1.1 + 10, self.pos[1] + self.height // 3)
-            ])
-        
-        # Draw the text "ALERT" next to the triangle
-        self.draw_text("ALERT", (255, 255, 255), (self.pos[0] + self.width * 1.1, self.pos[1] + self.height // 2), surface)
 
     def draw(self, surface): # Main drawing function that returns whether image has been clicked on or not
         
