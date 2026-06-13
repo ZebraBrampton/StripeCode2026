@@ -15,8 +15,8 @@ def start_park_window(caption, size, pos, queue_in, queue_out, images):
     park_window.run()
 
 # Function to start the second window for station information using ride_park process
-def start_ride_window(caption, size, pos, queue_in, queue_out, logs):
-    ride_window = RideWindow(caption, size, pos, queue_in, queue_out, logs)
+def start_ride_window(caption, size, pos, queue_in, queue_out):
+    ride_window = RideWindow(caption, size, pos, queue_in, queue_out)
     ride_window.run()
 
 # Run program if this file is being run directly
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         
         print("\nClosing Ride Window Process...")
         ride_process.terminate()
-        print("\Ride Window is closed.")
+        print("Ride Window is closed.")
 
         print("\nClosing Park Window Process...")
         park_process.terminate()

@@ -2,6 +2,7 @@ import pygame
 from os import environ
 
 from rideClass import Rides
+from initialization import config
 
 class ParkWindow:
 
@@ -35,7 +36,11 @@ class ParkWindow:
         self.time_text = "00:00"
         self.total_sim_hours = 0
         self.total_paused_time = 0
-        self.prev_hour = self.STARTTIME
+        self.STARTTIME = config['simulation']['startHour']
+        self.ENDTIME = config['simulation']['endHour']
+
+        self.SIMULATIONHOUR = config['simulation']['realTimeInterval'] * 1000
+        self.prev_hour = self.SIMULATIONHOUR
         self.queue_out.put(self.prev_hour)
 
         # Initialize Images
@@ -43,12 +48,12 @@ class ParkWindow:
             self.images[ride] = Rides(*self.images[ride])
 
         # Audio initialization
-        pygame.mixer.music.load("Audio/BGM.mp3")
+        pygame.mixer.music.load("International/Audio/BGM.mp3")
         pygame.mixer.music.set_volume(0.5)
 
-        self.pauseSFX = pygame.mixer.Sound("Audio/PauseSFX.mp3")
-        self.restartSFX = pygame.mixer.Sound("Audio/RestartSFX.mp3")
-        self.exitSFX = pygame.mixer.Sound("Audio/ExitSFX.mp3")
+        self.pauseSFX = pygame.mixer.Sound("International/Audio/PauseSFX.mp3")
+        self.restartSFX = pygame.mixer.Sound("International/Audio/RestartSFX.mp3")
+        self.exitSFX = pygame.mixer.Sound("International/Audio/ExitSFX.mp3")
 
     def draw_text(self, text, colour, text_pos): # Creates and draws text onto the screen
             text_surface = self.font.render(text, True, colour)
@@ -85,8 +90,190 @@ class ParkWindow:
         # Calculate the total paused time and add it to the total_paused_time variable
         self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
 
+    def confirm_restart(self): # Checks if user wants to restart the simulation at the end
+            
+            # Draw the overlay onto the main window
+            self.window.blit(self.overlay, (0, 0))
+            
+            # Draw confirmation text on top of the overlay
+            self.draw_text("GAME OVER - Do you wish to restart? Press 'Y' (Yes) or 'N' (No)", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
+            
+            # Force the display to update so the user actually sees the overlay
+            pygame.display.flip()
+            
+            # Wait for the user's response
+            waiting = True
+
+            pygame.mixer.music.stop() # Stop the background music when the simulation is over
+
+            while waiting:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        return True # If they click the window's X again, force quit
+                    
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_y:
+                            self.queue_out.put("RESTART") # Put "RESTART" into communication pipe so second window will reset its data and return to default screen
+                            self.restartSFX.play() # Play the restart sound effect when the simulation is over
+                            return True  # Yes, restart the program
+                        
+                        elif event.key == pygame.K_n:
+                            return False # No, return to the main loop
+            return False
+
     def draw(self): # Main drawing function to call other drawing functions
             self.window.fill((200, 200, 200))
+
+            # Draw stations and rides
+            for ride in self.images:
+
+                if self.images[ride].draw(self.window):
+                    self.queue_out.put(f"S:{ride}_{self.images[ride].colour}")
+
+    def restart(self): # Restarts program by resetting all variables
+        self.time_text = "00:00" # Reset time text
+        self.total_paused_time = pygame.time.get_ticks() # Reset total paused time
+        self.prev_hour = self.STARTTIME # Reset previous hour to the start time
+        self.queue_out.put(self.prev_hour) # Send message to second window to reset its display to the default screen
+        self.alert_stations = [] # Reset list of stations that are having conditions
+
+        pygame.mixer.music.play(-1) # Restart the background music in a loop (-1 means it will loop infinetly)
+
+    def confirm_restart(self): # Checks if user wants to restart the simulation at the end
+        
+        # Draw the overlay onto the main window
+        self.window.blit(self.overlay, (0, 0))
+        
+        # Draw confirmation text on top of the overlay
+        self.draw_text("GAME OVER - Do you wish to restart? Press 'Y' (Yes) or 'N' (No)", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
+        
+        # Force the display to update so the user actually sees the overlay
+        pygame.display.flip()
+        
+        # Wait for the user's response
+        waiting = True
+
+        pygame.mixer.music.stop() # Stop the background music when the simulation is over
+
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return True # If they click the window's X again, force quit
+                
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_y:
+                        self.queue_out.put("RESTART") # Put "RESTART" into communication pipe so second window will reset its data and return to default screen
+                        self.restartSFX.play() # Play the restart sound effect when the simulation is over
+                        return True  # Yes, restart the program
+                    
+                    elif event.key == pygame.K_n:
+                        return False # No, return to the main loop
+        return False
+
+    def confirm_exit(self): # Checks if user wants to exit the simulation, if so, end program
+        # Draw the overlay onto the main window
+        self.window.blit(self.overlay, (0, 0))
+        
+        # Draw confirmation text on top of the overlay
+        self.draw_text("Are you sure you want to exit? Press 'Y' (Yes) or 'N' (No)", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
+        
+        # Force the display to update so the user actually sees the overlay
+        pygame.display.flip()
+        
+        # Wait for the user's response
+        waiting = True
+        self.initial_paused_time = pygame.time.get_ticks()
+
+        pygame.mixer.music.pause() # Pause the background music when the user is deciding whether to exit or not
+
+        self.exitSFX.play() # Play the exit sound effect when the user is deciding whether to exit or not
+
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return True # If they click the window's X again, force quit
+                
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_y:
+                        self.queue_out.put("QUIT") # Put "QUIT" into communication pipe so second window (if open) will close
+                        return True  # Yes, exit the program
+                    
+                    elif event.key == pygame.K_n:
+                        self.final_paused_time = pygame.time.get_ticks()
+
+                        self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
+                        return False # No, return to the main loop
+
+    def sim_time(self): # Calculates the current simulation time
+        # Get the current time
+        start_offset_ms = self.STARTTIME * self.SIMULATIONHOUR
+        
+        total_milis = pygame.time.get_ticks() + start_offset_ms - self.total_paused_time
+        
+        # Calculate the simulation time
+        self.total_sim_hours = total_milis / self.SIMULATIONHOUR
+
+        # Use 24-hour clock
+        hour_24 = int(self.total_sim_hours) % 24
+        minute = int((self.total_sim_hours * 60) % 60)
+
+        # Determine AM or PM
+        if hour_24 < 12:
+            suffix = "AM"
+        
+        else:
+            suffix = "PM"
+
+        # Convert to 12-hour format
+        hour_12 = hour_24 % 12
+
+        # If hour is 0, set it to 12
+        if hour_12 == 0:
+            hour_12 = 12
+
+        self.time_text = f"{hour_12:02}:{minute:02} {suffix}"
+
+        if self.prev_hour != hour_24:
+            self.queue_out.put(hour_24)
+        
+        self.prev_hour = hour_24
+    
+    def events(self): # Checks if any events occur
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                
+                if self.confirm_exit():
+                    self.running = False
+                
+        if self.total_sim_hours >= self.ENDTIME:
+            if self.confirm_restart(): # Reset all display variables
+                self.restart()
+
+            else: # If user does not want to restart, end the program
+                self.running = False
+
+    def update(self): # Updates the current stats
+        
+        try:
+            msg = self.queue_in.get_nowait() # Grabs the most recent message in queue
+            
+            if type(msg) == str:
+                if msg == "QUIT":
+                    self.running = False
+        
+            elif type(msg) == list:
+                self.alert_stations = msg # Update the list of stations that are having issues if there is a change in the list from the second window
+
+        except:
+            pass
+
+        self.sim_time()
+
+        pygame.display.flip()
+
+        self.clock.tick(self.FPS)
 
     def run(self): # Main running loop
 

@@ -7,7 +7,7 @@ class Rides:
         # Initialize variables
         self.name = name
         self.pos = pos
-        self.scale = scale
+        self.width, self.height = scale
         self.colour = colour
 
         # Check if current image is the map
@@ -22,7 +22,7 @@ class Rides:
         try:
             self.image = pygame.image.load(file).convert_alpha()
 
-            self.image = pygame.transform.scale(self.image, self.scale) # Change the scale of the image
+            self.image = pygame.transform.scale(self.image, scale) # Change the scale of the image
 
             self.rect = self.image.get_rect() # Get the rectangle of the image for mouse collision detection
 
@@ -36,7 +36,7 @@ class Rides:
             self.image = None # Set image to None if file is not found
         
         # Audio Initialization
-        self.clickSFX = pygame.mixer.Sound("Audio/ClickSFX.mp3")
+        self.clickSFX = pygame.mixer.Sound("International/Audio/ClickSFX.mp3")
 
     def draw_text(self, text, colour, text_pos, surface): # Draws text onto given surface
         text_surface = pygame.font.SysFont("Arial", 18, bold=True).render(text, True, colour) # Create a text surface using the given text and colour
