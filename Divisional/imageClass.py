@@ -2,12 +2,11 @@ import pygame
 
 # Image class
 class Image:
-    def __init__(self, name: str, pos: tuple, ride: bool, colour: tuple=(0, 0, 0)): # Initalizes properties of the images
+    def __init__(self, name: str, pos: tuple, colour: tuple=(0, 0, 0)): # Initalizes properties of the images
 
         # Initialize variables
         self.name = name
         self.pos = pos
-        self.ride = ride
         self.colour = colour
 
             #self.scale = scale
