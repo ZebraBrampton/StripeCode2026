@@ -8,8 +8,9 @@ from secondWindow import RideWindow
 
 # Import essential variables
 from initialization import config
-from dataLogs import random_log
-given_log = None
+from randomLogs import random_log
+from dataLogs import res
+given_log = res
 
 # Function to start the main window for theme park using theme_park process
 def start_park_window(caption, size, pos, queue_in, queue_out, images):
