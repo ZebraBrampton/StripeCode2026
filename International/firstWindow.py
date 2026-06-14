@@ -116,19 +116,19 @@ class ParkWindow:
         self.draw_text(f"{self.rain} mm/hr", (0, 0, 0), (120, 240))
 
     def startGame(self): # Waits for user to click 'Begin' or press any key to start simulation
-        # Define color palette matching the target layout
+        # Define colors
         CREAM = (249, 242, 218)
         BLACK = (0, 0, 0)
         BRIGHT_GREEN = (0, 255, 0)
         PURPLE_TEXT = (128, 0, 128)
         SUBTITLE_GRAY = (100, 100, 100)
 
-        # Create distinct font sizes for hierarchy
+        # Create more fonts
         title_font = pygame.font.SysFont("Georgia", 56, bold=True)
         subtitle_font = pygame.font.SysFont("Arial", 18, italic=True)
         button_font = pygame.font.SysFont("Arial", 20, bold=True)
 
-        # Set up button dimensions and placement centered horizontally
+        # Set up button dimensions and placement
         btn_width, btn_height = 200, 65
         btn_x = (self.size[0] // 2) - (btn_width // 2)
         btn_y = int(self.size[1] * 0.65)  # Positions button at ~65% down the window height
@@ -195,7 +195,7 @@ class ParkWindow:
 
     def chooseRunType(self): # Prompts the user to select their data generation method
         
-        # --- 1. Define Colors ---
+        # Define colours
         CREAM = (249, 242, 218)
         BLACK = (0, 0, 0)
         BRIGHT_GREEN = (0, 255, 0)
@@ -203,20 +203,19 @@ class ParkWindow:
         PURPLE_TEXT = (128, 0, 128)
         SUBTITLE_GRAY = (80, 80, 80)
 
-        # --- 2. Initialize Fonts ---
-        # The image uses a serif font for the title and subtitle
+        # Initialize fonts
         title_font = pygame.font.SysFont("Georgia", 72, bold=True)
         subtitle_font = pygame.font.SysFont("Georgia", 20, bold=True) 
         button_font = pygame.font.SysFont("Arial", 20, bold=True)
 
-        # --- 3. Pre-render Text Surfaces (Optimization) ---
+        # Initialize text surfaces
         title_surf = title_font.render("Run Type", True, BLACK)
         sub_surf = subtitle_font.render("Do you wish to run randomly generated values or given values?", True, SUBTITLE_GRAY)
         
         btn_random_surf = button_font.render("Random", True, PURPLE_TEXT)
         btn_given_surf = button_font.render("Given", True, PURPLE_TEXT)
 
-        # --- 4. Define Rectangles & Positioning ---
+        # Define the buttons rect
         center_x = self.size[0] // 2
         
         # Text Rects
@@ -235,7 +234,7 @@ class ParkWindow:
         btn_random_text_rect = btn_random_surf.get_rect(center=random_button_rect.center)
         btn_given_text_rect = btn_given_surf.get_rect(center=given_button_rect.center)
 
-        # --- 5. Main Menu Loop ---
+        # Main loop
         waiting = True
         choice = None
         self.initial_paused_time = pygame.time.get_ticks()

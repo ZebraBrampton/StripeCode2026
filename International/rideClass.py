@@ -109,7 +109,7 @@ class Rides:
             else:
                 color = (0, 255, 0) # Green
 
-            # Create a small label box floating just above the ride's position
+            # Create a small label box floating just inside the ride image
             label_rect = pygame.Rect(self.pos[0], max(0, self.pos[1]), 65, 25)
             
             pygame.draw.rect(surface, color, label_rect) # Fill color
