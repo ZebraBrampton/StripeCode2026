@@ -46,9 +46,6 @@ class RideWindow:
         # Background colour of the window
         self.background_colour = (0, 0, 0)
 
-        # Audio initialization - fix sound effect
-        self.fixSFX = pygame.mixer.Sound("International/Audio/FixSFX.mp3")
-
     def draw_text(self, text, colour, text_pos): # Creates and draws text onto the screen
         text_surface = self.font.render(text, True, colour) # Render the text with the given colour
         text_rect = text_surface.get_rect(center=text_pos) # Get the rectangle of the text surface and set its center to the given text position
