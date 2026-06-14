@@ -345,7 +345,7 @@ class ParkWindow:
                         return False # No, return to the main loop
         return False
 
-    def confirm_exit(self): # Prompts the user to select their data generation method
+    def confirm_exit(self): # Prompts the user to confirm their choice of exitting
         
         # Define colours
         CREAM = (249, 242, 218)
@@ -403,11 +403,11 @@ class ParkWindow:
             self.window.blit(title_surf, title_rect)
             self.window.blit(sub_surf, sub_rect)
 
-            # Draw Random Button (Green) & Text
+            # Draw Accept Button (Green) & Text
             pygame.draw.rect(self.window, BRIGHT_GREEN, accept_button_rect)
             self.window.blit(btn_accept_surf, btn_accept_text_rect)
 
-            # Draw Given Button (Red) & Text
+            # Draw Deny Button (Red) & Text
             pygame.draw.rect(self.window, BRIGHT_RED, deny_button_rect)
             self.window.blit(btn_deny_surf, btn_deny_text_rect)
 

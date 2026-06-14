@@ -94,7 +94,7 @@ class CoreSimulation:
 sim = CoreSimulation()
 random_log = sim.run_full_day()
 
-# --- TEST RUN EXECUTION ---
+# Testing
 if __name__ == "__main__":    
     import pprint
     pprint.pprint(random_log)
