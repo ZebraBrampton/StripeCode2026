@@ -46,7 +46,7 @@ class ParkWindow:
         # Initialize Images
         for ride in self.images:
             self.images[ride] = Rides(*self.images[ride])
-
+        
         # Audio initialization
         pygame.mixer.music.load("International/Audio/BGM.mp3")
         pygame.mixer.music.set_volume(0.5)
@@ -122,13 +122,16 @@ class ParkWindow:
             return False
 
     def draw(self): # Main drawing function to call other drawing functions
-            self.window.fill((200, 200, 200))
+        self.window.fill((200, 200, 200))
 
-            # Draw stations and rides
-            for ride in self.images:
+        # Draw stations and rides
+        for ride in self.images:
 
-                if self.images[ride].draw(self.window):
-                    self.queue_out.put(f"S:{ride}_{self.images[ride].colour}")
+            if self.images[ride].draw(self.window):
+                self.queue_out.put(f"S:{ride}_{self.images[ride].colour}") 
+            
+        # Draw timer
+        self.draw_text(self.time_text, (0, 0, 0), (120, 45))
 
     def restart(self): # Restarts program by resetting all variables
         self.time_text = "00:00" # Reset time text
@@ -277,7 +280,7 @@ class ParkWindow:
 
     def run(self): # Main running loop
 
-            self.startGame()
+            #self.startGame()
 
             pygame.mixer.music.play(-1) # Play the background music in a loop (-1 means it will loop infinetly)
 

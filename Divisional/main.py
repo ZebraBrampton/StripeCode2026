@@ -7,7 +7,7 @@ from themeParkClass import ParkWindow
 from rideClass import RideWindow
 
 # Import the combinedDict that contains all data logs
-from dataLogs import combinedDict
+from International.dataLogs import combinedDict
 
 # Function to start the main window for theme park using theme_park process
 def start_theme_park(caption, size, pos, queue_in, queue_out, images):

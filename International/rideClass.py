@@ -2,12 +2,13 @@ import pygame
 
 # Rides class
 class Rides:
-    def __init__(self, name: str, file: str, pos: tuple, scale: tuple, colour: tuple=(0, 0, 0)): # Initalizes properties of the images
+    def __init__(self, name: str, file: str, pos: tuple, scale: tuple, outside: bool, colour: tuple=(0, 0, 0)): # Initalizes properties of the images
 
         # Initialize variables
         self.name = name
         self.pos = pos
         self.width, self.height = scale
+        self.outside = outside
         self.colour = colour
 
         # Check if current image is the map
@@ -31,7 +32,7 @@ class Rides:
             self.clicked = False # Variable to check if the image has been clicked on or not, used to prevent multiple clicks from one click
 
             self.hover_colour = (255, 0, 0) # Colour of the outline when the mouse is hovered above the image
-
+            
         except FileNotFoundError: # If the image file is not found
             self.image = None # Set image to None if file is not found
         
@@ -44,22 +45,22 @@ class Rides:
         surface.blit(text_surface, text_rect) # Draw the text surface onto the given surface at the position of the text rectangle
 
     def hover_mouse(self, surface): # Creates a outline of image when mouse is hovered above the image
-
+    
         pygame.draw.line(surface, self.hover_colour, (self.pos),
-                         (self.pos[0] + self.width, self.pos[1]),
-                         5)
+                        (self.pos[0] + self.width, self.pos[1]),
+                        5)
         
         pygame.draw.line(surface, self.hover_colour, (self.pos[0] + self.width, self.pos[1]),
-                         (self.pos[0] + self.width, self.pos[1] + self.height),
-                         5)
+                        (self.pos[0] + self.width, self.pos[1] + self.height),
+                        5)
         
         pygame.draw.line(surface, self.hover_colour, (self.pos[0] + self.width, self.pos[1] + self.height), 
-                         (self.pos[0], self.pos[1] + self.height),
-                         5)
+                        (self.pos[0], self.pos[1] + self.height),
+                        5)
         
         pygame.draw.line(surface, self.hover_colour, (self.pos[0], self.pos[1] + self.height), 
-                         (self.pos),
-                         5)
+                        (self.pos),
+                        5)
         
     def check_mouse(self, surface): # Checks if mouse is hovered above the image and if the user clicked on image
         action = False # If user clicked on the image
@@ -71,7 +72,7 @@ class Rides:
         pos = pygame.mouse.get_pos()
 
         # Check mouseover and clicked conditions
-        if self.rect.collidepoint(pos):
+        if self.rect.collidepoint(pos) and self.outside:
             
             self.hover_mouse(surface) # Call the hover mouse function to create the outline when mouse is hovered above the image
 
