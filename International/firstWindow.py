@@ -60,7 +60,7 @@ class ParkWindow:
         self.restartSFX = pygame.mixer.Sound("International/Audio/RestartSFX.mp3")
         self.exitSFX = pygame.mixer.Sound("International/Audio/ExitSFX.mp3")
 
-    def update_weather(self, conditions):
+    def update_weather(self, conditions): # Updates weather stats at given hour
         self.rain = conditions['rain']
         self.wind = conditions['wind']
         self.temp = conditions['temp']
