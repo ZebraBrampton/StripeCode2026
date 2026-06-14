@@ -71,6 +71,7 @@ class RideWindow:
 
         self.queue_out.put(data_packet)
 
+
     def draw(self): # Main drawing function that calls other drawing functions
         # Background screen
         self.draw_bg()

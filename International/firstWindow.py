@@ -286,37 +286,6 @@ class ParkWindow:
         
         return f"run_{choice}"
 
-    def confirm_restart(self): # Checks if user wants to restart the simulation at the end
-            
-            # Draw the overlay onto the main window
-            self.window.blit(self.overlay, (0, 0))
-            
-            # Draw confirmation text on top of the overlay
-            self.draw_text("GAME OVER - Do you wish to restart? Press 'Y' (Yes) or 'N' (No)", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
-            
-            # Force the display to update so the user actually sees the overlay
-            pygame.display.flip()
-            
-            # Wait for the user's response
-            waiting = True
-
-            pygame.mixer.music.stop() # Stop the background music when the simulation is over
-
-            while waiting:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        return True # If they click the window's X again, force quit
-                    
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_y:
-                            self.queue_out.put("RESTART") # Put "RESTART" into communication pipe so second window will reset its data and return to default screen
-                            self.restartSFX.play() # Play the restart sound effect when the simulation is over
-                            return True  # Yes, restart the program
-                        
-                        elif event.key == pygame.K_n:
-                            return False # No, return to the main loop
-            return False
-
     def draw(self): # Main drawing function to call other drawing functions
         self.window.fill((200, 200, 200))
 
@@ -331,6 +300,9 @@ class ParkWindow:
 
         # Draw weather conditions
         self.draw_weather_icons()
+
+        # Draw pause button
+        self.draw_pause_button()
 
     def restart(self): # Restarts program by resetting all variables
         self.time_text = "00:00" # Reset time text
@@ -407,6 +379,65 @@ class ParkWindow:
 
                         self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
                         return False # No, return to the main loop
+
+    def pause(self): # Waits for user to input any key to resume simulation
+        
+        pygame.draw.polygon(self.window, (0, 0, 0), (
+            (self.size[0] * (351/400), self.size[1] * (23/900)),
+            (self.size[0] * (15/16), self.size[1] * (1/18)),
+            (self.size[0] * (351/400), self.size[1] * (77/900))
+        )) # Draw a red triangle above the pause button to indicate that the simulation is paused
+        
+        # Draw the overlay onto the main window
+        self.window.blit(self.overlay, (0, 0))
+
+        # Draw pause text on top of the overlay
+        self.draw_text("Simulation Paused. Press any key to resume.", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
+
+        # Force the display to update so the user actually sees the overlay
+        pygame.display.flip()
+
+        waiting = True # Wait for the user to press a key to resume the simulation
+
+        self.initial_paused_time = pygame.time.get_ticks() # Start counting paused time until the user presses a key to resume the simulation so that the paused time will not be included in the simulation time calculation
+
+        pygame.mixer.music.pause() # Pause the background music when the simulation is paused
+
+        self.pauseSFX.play() # Play the pause sound effect when the simulation is paused
+
+        # Event loop to wait for user input
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: # If the user clicks the window's X
+                    waiting = False
+                    self.queue_out.put("QUIT") # Put "QUIT" into communication pipe so second window will close
+                    self.running = False
+                if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN: # If user presses any key or clicks the mouse button
+                    waiting = False
+                    pygame.mixer.music.unpause() # Resume the background music when the simulation is resumed
+        
+        # Take the final paused time after the user presses a key to resume
+        self.final_paused_time = pygame.time.get_ticks()
+
+        # Calculate the total paused time and add it to the total_paused_time variable
+        self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
+
+    def draw_pause_button(self): # Draws the pause button and checks if user clicks on it
+        # Hitbox of button
+        self.pause_button = pygame.draw.rect(self.window, (255, 242, 204), (self.size[0] * 0.85, 10, self.size[0] * 0.1, self.size[0] * 0.1))
+        
+        # Circle outline of button
+        pygame.draw.circle(self.window, (0, 0, 0), (self.size[0] * 0.9, self.size[1] * (1/18)), 40, 5)
+
+        if self.pause_button.collidepoint(pygame.mouse.get_pos()):
+            pygame.draw.circle(self.window, (255, 0, 0), (self.size[0] * 0.9, self.size[1] * (1/18)), 40) # Highlight button when hovered
+
+            if pygame.mouse.get_pressed()[0] == 1: # If the user clicks the pause button
+                self.pause()
+
+        # Draw the lines of the pause symbol
+        pygame.draw.line(self.window, (0, 0, 0), (self.size[0] * (71/80), self.size[1] * (1/36)), (self.size[0] * (71/80), self.size[1] * (1/12)), 5)
+        pygame.draw.line(self.window, (0, 0, 0), (self.size[0] * (73/80), self.size[1] * (1/36)), (self.size[0] * (73/80), self.size[1] * (1/12)), 5)
 
     def sim_time(self): # Calculates the current simulation time
         # Get the current time
