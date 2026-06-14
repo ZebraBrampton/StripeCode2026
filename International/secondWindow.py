@@ -56,7 +56,7 @@ class RideWindow:
 
         self.window.blit(self.overlay, (0, 0)) # Draw the semi-transparent overlay on top of the background
 
-    def weatherUpdate(self):
+    def weatherUpdate(self): # Updates the current weather at given hour
         weather_values = self.main_log[self.curr_hour]['weather_values']
         self.ride_statuses = self.main_log[self.curr_hour]['rides']
 

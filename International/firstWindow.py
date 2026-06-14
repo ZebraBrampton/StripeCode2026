@@ -70,7 +70,7 @@ class ParkWindow:
             text_rect = text_surface.get_rect(center=text_pos)
             self.window.blit(text_surface, text_rect)
 
-    def draw_weather_icons(self):
+    def draw_weather_icons(self): # Draws all weather icons according to their respective thresholds
         # Find temp impact
         if self.temp <= 25:
             temp_icon = "Low Temp"
