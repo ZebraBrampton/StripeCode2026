@@ -345,39 +345,103 @@ class ParkWindow:
                         return False # No, return to the main loop
         return False
 
-    def confirm_exit(self): # Checks if user wants to exit the simulation, if so, end program
-        # Draw the overlay onto the main window
-        self.window.blit(self.overlay, (0, 0))
+    def confirm_exit(self): # Prompts the user to select their data generation method
         
-        # Draw confirmation text on top of the overlay
-        self.draw_text("Are you sure you want to exit? Press 'Y' (Yes) or 'N' (No)", (255, 255, 255), (self.size[0] // 2, self.size[1] // 2))
+        # Define colours
+        CREAM = (249, 242, 218)
+        BLACK = (0, 0, 0)
+        BRIGHT_GREEN = (0, 255, 0)
+        BRIGHT_RED = (255, 0, 0)
+        PURPLE_TEXT = (128, 0, 128)
+        SUBTITLE_GRAY = (80, 80, 80)
+
+        # Initialize fonts
+        title_font = pygame.font.SysFont("Georgia", 72, bold=True)
+        subtitle_font = pygame.font.SysFont("Georgia", 20, bold=True) 
+        button_font = pygame.font.SysFont("Arial", 20, bold=True)
+
+        # Initialize text surfaces
+        title_surf = title_font.render("Simulation End", True, BLACK)
+        sub_surf = subtitle_font.render("The Simulation has came to it’s close. Would you like to continue?", True, SUBTITLE_GRAY)
         
-        # Force the display to update so the user actually sees the overlay
-        pygame.display.flip()
+        btn_accept_surf = button_font.render("Yes", True, PURPLE_TEXT)
+        btn_deny_surf = button_font.render("No", True, PURPLE_TEXT)
+
+        # Define the buttons rect
+        center_x = self.size[0] // 2
         
-        # Wait for the user's response
-        waiting = True
-        self.initial_paused_time = pygame.time.get_ticks()
+        # Text Rects
+        title_rect = title_surf.get_rect(center=(center_x, int(self.size[1] * 0.20)))
+        sub_rect = sub_surf.get_rect(center=(center_x, int(self.size[1] * 0.50)))
+
+        # Button Rects (Stacked vertically)
+        btn_width, btn_height = 240, 65
+        btn_start_y = int(self.size[1] * 0.65)
+        btn_spacing = 20 # Gap between the two buttons
+        
+        accept_button_rect = pygame.Rect(center_x - (btn_width // 2), btn_start_y, btn_width, btn_height)
+        deny_button_rect = pygame.Rect(center_x - (btn_width // 2), btn_start_y + btn_height + btn_spacing, btn_width, btn_height)
+        
+        # Center the text inside their respective buttons
+        btn_accept_text_rect = btn_accept_surf.get_rect(center=accept_button_rect.center)
+        btn_deny_text_rect = btn_deny_surf.get_rect(center=deny_button_rect.center)
 
         pygame.mixer.music.pause() # Pause the background music when the user is deciding whether to exit or not
 
         self.exitSFX.play() # Play the exit sound effect when the user is deciding whether to exit or not
 
+        # Main loop
+        waiting = True
+        choice = None
+        self.initial_paused_time = pygame.time.get_ticks()
+
         while waiting:
+            # Draw Background
+            self.window.fill(CREAM)
+
+            # Draw Heading Texts
+            self.window.blit(title_surf, title_rect)
+            self.window.blit(sub_surf, sub_rect)
+
+            # Draw Random Button (Green) & Text
+            pygame.draw.rect(self.window, BRIGHT_GREEN, accept_button_rect)
+            self.window.blit(btn_accept_surf, btn_accept_text_rect)
+
+            # Draw Given Button (Red) & Text
+            pygame.draw.rect(self.window, BRIGHT_RED, deny_button_rect)
+            self.window.blit(btn_deny_surf, btn_deny_text_rect)
+
+            # Update Display Buffer
+            pygame.display.flip()
+
+            # Event Processing
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return True # If they click the window's X again, force quit
+                    waiting = False
+                    self.queue_out.put("QUIT")
+                    self.running = False
+                    return "QUIT"
                 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_y:
-                        self.queue_out.put("QUIT") # Put "QUIT" into communication pipe so second window (if open) will close
-                        return True  # Yes, exit the program
-                    
-                    elif event.key == pygame.K_n:
-                        self.final_paused_time = pygame.time.get_ticks()
+                # Explicit Mouse Click Logic for Both Buttons
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1: # Left mouse click
+                        if accept_button_rect.collidepoint(event.pos):
+                            waiting = False
+                            return True
+                        elif deny_button_rect.collidepoint(event.pos):
+                            waiting = False
 
-                        self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
-                        return False # No, return to the main loop
+            # Lock Frame Rate
+            self.clock.tick(self.FPS)
+        
+        # Exit menu time calculation
+        self.final_paused_time = pygame.time.get_ticks()
+        self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
+
+        # Resume music
+        pygame.mixer.music.unpause()
+
+        return False
 
     def pause(self): # Waits for user to input any key to resume simulation
         
