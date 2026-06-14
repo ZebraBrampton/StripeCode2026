@@ -13,6 +13,8 @@ class RideWindow:
         self.random_data = random_data
         self.given_data = given_data
 
+        self.main_log = None
+
         # Initialize variables for the window
         self.running = True
         self.FPS = 60
@@ -37,7 +39,6 @@ class RideWindow:
         # Variables for data
         self.curr_station = "N/A" # Current station
         self.curr_hour = config['simulation']['startHour'] # Starting hour
-        self.alert_stations = [] # List of stations that have alerts
         
         # Visual variable (rectangles)
         # Background colour of the window
@@ -51,12 +52,15 @@ class RideWindow:
         text_rect = text_surface.get_rect(center=text_pos) # Get the rectangle of the text surface and set its center to the given text position
         self.window.blit(text_surface, text_rect) # Draw the text surface onto the window at the position of the text rectangle
 
+    def weatherUpdate(self):
+        if self.curr_hour in self.main_log:
+            weather_values = self.main_log[self.curr_hour]['weather_values']
+            self.queue_out.put(weather_values)
 
     def draw_bg(self): # Draws the background
         self.window.fill(self.background_colour) # Fill the background with the current background colour
 
         self.window.blit(self.overlay, (0, 0)) # Draw the semi-transparent overlay on top of the background
-
 
     def draw(self): # Main drawing function that calls other drawing functions
         # Background screen
@@ -87,6 +91,13 @@ class RideWindow:
 
             elif type(msg) == int: # If the message is an integer
                 self.curr_hour = msg # Update the current hour
+                self.weatherUpdate()
+            
+            elif msg.startswith("run_"):
+                if msg == "run_GIVEN":
+                    self.main_log = self.given_data
+                else:
+                    self.main_log = self.random_data
             
             elif msg.startswith("S:"): # If the message starts with "S:"
                 self.curr_station = msg[2:].split("_")[0] # Update the current station

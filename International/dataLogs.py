@@ -79,23 +79,22 @@ class CoreSimulation:
             for ride in RIDE_LOGIC.keys():
                 ride_states[ride] = self.calculate_ride_state(ride, rain_imp, wind_imp, temp_imp)
 
-            # Combined data packet saving both raw weather values and the ride states
+            # FIXED: Pointing directly to the weather object properties (self.weather.rain, etc.)
             self.simulation_results[hour] = {
                 "weather_values": {
-                    "rain": self.rain,
-                    "wind": self.wind,
-                    "temp": self.temp
+                    "rain": self.weather.rain,
+                    "wind": self.weather.wind,
+                    "temp": self.weather.temp
                 },
                 "rides": ride_states
             }
             
         return self.simulation_results
 
+sim = CoreSimulation()
+random_log = sim.run_full_day()
 
 # --- TEST RUN EXECUTION ---
-if __name__ == "__main__":
-    sim = CoreSimulation()
-    day_log = sim.run_full_day()
-    
+if __name__ == "__main__":    
     import pprint
-    pprint.pprint(day_log)
+    pprint.pprint(random_log)

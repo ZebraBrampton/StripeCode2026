@@ -27,7 +27,6 @@ class Rides:
         # Initialize the image using initialized variables
         try:
             self.image = pygame.image.load(file).convert_alpha()
-            print(self.name)
 
             self.image = pygame.transform.scale(self.image, scale) # Change the scale of the image
 
@@ -97,9 +96,10 @@ class Rides:
 
     def draw(self, surface): # Main drawing function that returns whether image has been clicked on or not
         
-        action = self.check_mouse(surface) # Check if the image has been clicked on and store the result in action variable
+        if not self.icon:
+            action = self.check_mouse(surface) # Check if the image has been clicked on and store the result in action variable
 
-        # Draw image on screen
-        surface.blit(self.image, (self.rect.x, self.rect.y))
+            # Draw image on screen
+            surface.blit(self.image, (self.rect.x, self.rect.y))
 
-        return action # Return whether the image has been clicked on or not
+            return action # Return whether the image has been clicked on or not
