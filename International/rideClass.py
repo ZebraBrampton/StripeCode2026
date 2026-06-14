@@ -38,9 +38,15 @@ class Rides:
 
             self.hover_colour = (255, 0, 0) # Colour of the outline when the mouse is hovered above the image
             
+            self.overlay = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+            self.overlay.fill((0, 0, 0, 100))
+
         except FileNotFoundError: # If the image file is not found
             self.image = None # Set image to None if file is not found
-        
+
+        self.colour = colour
+        self.status = "FULL" # Default status before data arrives
+
         # Audio Initialization
         self.clickSFX = pygame.mixer.Sound("International/Audio/ClickSFX.mp3")
 
@@ -91,15 +97,36 @@ class Rides:
 
         return action # Return whether the image has been clicked on or not
 
-    def draw_signal(self, surface): # Draws a ride impact symbol
-        pass
+    def draw_signal(self, surface): # Draws a ride impact label
+        # Only draw signals for the 6 interactive rides affected by weather
+        if self.outside and not self.map:
+            
+            # Determine color based on impact level
+            if self.status == "STOP":
+                color = (255, 0, 0) # Red
+            elif self.status == "SLOW":
+                color = (255, 255, 0) # Yellow
+            else:
+                color = (0, 255, 0) # Green
 
-    def draw(self, surface): # Main drawing function that returns whether image has been clicked on or not
-        
+            # Create a small label box floating just above the ride's position
+            label_rect = pygame.Rect(self.pos[0], max(0, self.pos[1]), 65, 25)
+            
+            pygame.draw.rect(surface, color, label_rect) # Fill color
+            pygame.draw.rect(surface, (0, 0, 0), label_rect, 2) # Black outline
+            
+            # Draw the status text inside the label
+            self.draw_text(self.status, (0, 0, 0), label_rect.center, surface)
+
+    def draw(self, surface): # Main drawing function
         if not self.icon:
-            action = self.check_mouse(surface) # Check if the image has been clicked on and store the result in action variable
+            action = self.check_mouse(surface)
+            surface.blit(self.image, self.rect.topleft)
+            
+            if not self.outside and not self.map:
+                surface.blit(self.overlay, self.rect.topleft)
 
-            # Draw image on screen
-            surface.blit(self.image, (self.rect.x, self.rect.y))
+            # Render the status label on top of the ride image
+            self.draw_signal(surface)
 
-            return action # Return whether the image has been clicked on or not
+            return action

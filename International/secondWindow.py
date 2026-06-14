@@ -40,7 +40,9 @@ class RideWindow:
         self.curr_station = "N/A" # Current station
         self.curr_hour = config['simulation']['startHour'] # Starting hour
         
-        # Visual variable (rectangles)
+        # Store current ride statuses
+        self.ride_statuses = {}
+
         # Background colour of the window
         self.background_colour = (0, 0, 0)
 
@@ -52,25 +54,55 @@ class RideWindow:
         text_rect = text_surface.get_rect(center=text_pos) # Get the rectangle of the text surface and set its center to the given text position
         self.window.blit(text_surface, text_rect) # Draw the text surface onto the window at the position of the text rectangle
 
-    def weatherUpdate(self):
-        if self.curr_hour in self.main_log:
-            weather_values = self.main_log[self.curr_hour]['weather_values']
-            self.queue_out.put(weather_values)
-
     def draw_bg(self): # Draws the background
         self.window.fill(self.background_colour) # Fill the background with the current background colour
 
         self.window.blit(self.overlay, (0, 0)) # Draw the semi-transparent overlay on top of the background
 
+    def weatherUpdate(self):
+        weather_values = self.main_log[self.curr_hour]['weather_values']
+        self.ride_statuses = self.main_log[self.curr_hour]['rides']
+
+        # Combine weather and ride states
+        data_packet = {
+            'weather': weather_values,
+            'rides': self.ride_statuses
+        }
+
+        self.queue_out.put(data_packet)
+
     def draw(self): # Main drawing function that calls other drawing functions
         # Background screen
         self.draw_bg()
-
-        # Draw the current station
-        self.draw_text(f"Current Station: {self.curr_station}", (255, 255, 255), (self.size[0] // 2, self.size[1] // 5))
         
         # Draw the current hour
-        self.draw_text(f"Current Hour: {self.curr_hour}", (255, 255, 255), (self.size[0] // 2, self.size[1] // 4))
+        self.draw_text(f"Current Hour: {self.curr_hour}:00", (255, 255, 255), (self.size[0] // 2, 40))
+
+        # Show current station
+        self.draw_text(f"Current Station: {self.curr_station}", (255, 255, 255), (self.size[0] // 2, 100))
+        
+        IMPACT_COLORS = {
+            "FULL": (0, 255, 0),    # Green
+            "SLOW": (255, 255, 0),  # Yellow
+            "STOP": (255, 0, 0)     # Red
+            }
+        
+        current_impact = self.ride_statuses.get(self.curr_station, "FULL")
+        impact_color = IMPACT_COLORS.get(current_impact, (255, 0, 0))
+
+        self.draw_text(f"Current Impact: {current_impact}", impact_color, (self.size[0] // 2, 140))
+
+        # Header for listing the stats
+        self.draw_text("--- Current Statistics ---", (200, 200, 200), (self.size[0] // 2, 220))
+        
+        y_pos = 260
+        colors = {"FULL": (0, 255, 0), 
+                  "SLOW": (255, 255, 0)}
+
+        for ride, status in self.ride_statuses.items():
+            color = colors.get(status, (255, 0, 0))
+            self.draw_text(f"{ride}: {status}", color, (self.size[0] // 2, y_pos))
+            y_pos += 40
 
     def events(self): # Checks if user wants to quit pygame
 

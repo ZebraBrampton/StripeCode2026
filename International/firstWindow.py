@@ -71,8 +71,7 @@ class ParkWindow:
             self.window.blit(text_surface, text_rect)
 
     def draw_weather_icons(self):
-        
-        # --- 1. Temperature Logic (18-25 Low, 26-32 Mod, 33-45 High) ---
+        # Find temp impact
         if self.temp <= 25:
             temp_icon = "Low Temp"
         elif self.temp <= 32:
@@ -80,7 +79,7 @@ class ParkWindow:
         else:
             temp_icon = "High Temp"
 
-        # --- 2. Wind Logic (0-20 Low, 21-40 Mod, 41-60 High) ---
+        # Find wind speed impact
         if self.wind <= 20:
             wind_icon = "Low Wind"
         elif self.wind <= 40:
@@ -88,7 +87,7 @@ class ParkWindow:
         else:
             wind_icon = "Heavy Wind"
 
-        # --- 3. Rain Logic (0-3 Low, 4-6 Mod, 7-10 High) ---
+        # Find rain impact
         if self.rain <= 3:
             rain_icon = "Low Rain"
         elif self.rain <= 6:
@@ -96,7 +95,7 @@ class ParkWindow:
         else:
             rain_icon = "Heavy Rain"
 
-        # --- 4. Time of Day Logic (Optional, but included in your init dict) ---
+        # Find simulation hour icon
         current_hour = int(self.total_sim_hours) % 24
         if current_hour < 12:
             time_icon = "Morning"
@@ -105,16 +104,15 @@ class ParkWindow:
         else:
             time_icon = "Evening"
 
-        # --- 5. Draw the Icons ---
-        # We use .blit directly because the Rides.draw() method ignores items marked as self.icon = True
+        # Display icons
         self.window.blit(self.images[temp_icon].image, self.images[temp_icon].rect.topleft)
         self.window.blit(self.images[wind_icon].image, self.images[wind_icon].rect.topleft)
         self.window.blit(self.images[rain_icon].image, self.images[rain_icon].rect.topleft)
         self.window.blit(self.images[time_icon].image, self.images[time_icon].rect.topleft)
 
-        # --- 6. Draw the text values next to the icons ---
+        # Display values of each condition
         self.draw_text(f"{self.temp} °C", (0, 0, 0), (120, 120))
-        self.draw_text(f"{self.wind} m/s", (0, 0, 0), (120, 185))
+        self.draw_text(f"{self.wind} km/hr", (0, 0, 0), (120, 185))
         self.draw_text(f"{self.rain} mm/hr", (0, 0, 0), (120, 240))
 
     def startGame(self): # Waits for user to click 'Begin' or press any key to start simulation
@@ -468,12 +466,16 @@ class ParkWindow:
             if type(msg) == str:
                 if msg == "QUIT":
                     self.running = False
-        
-            elif type(msg) == list:
-                self.alert_stations = msg # Update the list of stations that are having issues if there is a change in the list from the second window
 
             elif type(msg) == dict:
-                self.update_weather(msg)
+                # Unpack the packet from the second window
+                if 'weather' in msg and 'rides' in msg:
+                    self.update_weather(msg['weather'])
+                    
+                    # Loop through the received states and update the ride objects
+                    for ride_name, status in msg['rides'].items():
+                        if ride_name in self.images:
+                            self.images[ride_name].status = status
 
         except:
             pass
