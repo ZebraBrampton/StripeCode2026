@@ -119,7 +119,7 @@ class CoreSimulation:
 sim1 = CoreSimulation(mode=SIMULATION_MODE, csv_path=CSV_FILE_PATH)
 given_logs = sim1.run_full_day()
 
-randomSim = CoreSimulation(mode=SIMULATION_MODE)
+randomSim = CoreSimulation()
 random_logs = randomSim.run_full_day()
 
 if __name__ == "__main__":
