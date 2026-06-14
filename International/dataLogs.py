@@ -1,6 +1,5 @@
 import random
 import csv
-import pprint
 
 HOURS = list(range(10, 22))
 
@@ -117,8 +116,13 @@ class CoreSimulation:
             
         return self.simulation_results
 
-sim = CoreSimulation(mode=SIMULATION_MODE, csv_path=CSV_FILE_PATH)
-res = sim.run_full_day()
+sim1 = CoreSimulation(mode=SIMULATION_MODE, csv_path=CSV_FILE_PATH)
+given_logs = sim1.run_full_day()
+
+randomSim = CoreSimulation(mode=SIMULATION_MODE)
+random_logs = randomSim.run_full_day()
 
 if __name__ == "__main__":
-    pprint(res)
+    print(given_logs)
+    print("-" * 24)
+    print(random_logs)

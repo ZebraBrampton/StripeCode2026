@@ -279,7 +279,7 @@ class ParkWindow:
             # Lock Frame Rate
             self.clock.tick(self.FPS)
         
-        # --- 6. Exit Menu Time Calculation ---
+        # Exit menu time calculation
         self.final_paused_time = pygame.time.get_ticks()
         self.total_paused_time += (self.final_paused_time - self.initial_paused_time)
         

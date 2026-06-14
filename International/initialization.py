@@ -51,7 +51,7 @@ config = {
         },
 
     'simulation' : {
-        'realTimeInterval' : 10, # One simulation hour is 10 seconds
+        'realTimeInterval' : 3, # One simulation hour is 10 seconds
         'startHour' : 10, # Start clock at 10:00 AM
         'endHour' : 21 # End clock at 9:00 PM
         },

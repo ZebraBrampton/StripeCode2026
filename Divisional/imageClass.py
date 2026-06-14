@@ -9,8 +9,6 @@ class Image:
         self.pos = pos
         self.colour = colour
 
-            #self.scale = scale
-
         # Check if current image is the map
         if self.pos == (0, 0):
             self.map = True
