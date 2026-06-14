@@ -8,7 +8,6 @@ from secondWindow import RideWindow
 
 # Import essential variables
 from initialization import config
-from randomLogs import random_log
 from dataLogs import random_logs
 from dataLogs import given_logs
 
