@@ -6,8 +6,10 @@ from multiprocessing import Queue, Process
 from firstWindow import ParkWindow
 from secondWindow import RideWindow
 
-# Import the config with all essential variables
+# Import essential variables
 from initialization import config
+from dataLogs import random_log
+given_log = None
 
 # Function to start the main window for theme park using theme_park process
 def start_park_window(caption, size, pos, queue_in, queue_out, images):
@@ -15,8 +17,8 @@ def start_park_window(caption, size, pos, queue_in, queue_out, images):
     park_window.run()
 
 # Function to start the second window for station information using ride_park process
-def start_ride_window(caption, size, pos, queue_in, queue_out):
-    ride_window = RideWindow(caption, size, pos, queue_in, queue_out)
+def start_ride_window(caption, size, pos, queue_in, queue_out, random_data, given_data):
+    ride_window = RideWindow(caption, size, pos, queue_in, queue_out, random_data, given_data)
     ride_window.run()
 
 # Run program if this file is being run directly
@@ -26,7 +28,7 @@ if __name__ == "__main__":
     main_to_park = Queue()
     park_to_main = Queue()
 
-    # Create a dedicated kwargs dictionary for the park process
+    # Create a dedicated kwargs dictionary for the first window process
     park_kwargs = {
         **config['parkWindow'],
         'queue_in': main_to_park,
@@ -38,11 +40,13 @@ if __name__ == "__main__":
     main_to_ride = Queue()
     ride_to_main = Queue()
     
-    # Create a dedicated kwargs dictionary for the theme park process
+    # Create a dedicated kwargs dictionary for the second windo process
     ride_kwargs = {
         **config['rideWindow'],
         'queue_in': main_to_ride,
-        'queue_out': ride_to_main
+        'queue_out': ride_to_main,
+        'random_logs' : random_log,
+        'logs' : given_log
     }
 
     # Create Main Window with communcation_queue

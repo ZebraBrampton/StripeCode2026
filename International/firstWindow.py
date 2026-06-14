@@ -43,6 +43,8 @@ class ParkWindow:
         self.prev_hour = self.SIMULATIONHOUR
         self.queue_out.put(self.prev_hour)
 
+        # Additional Variables
+
         # Initialize Images
         for ride in self.images:
             self.images[ride] = Rides(*self.images[ride])

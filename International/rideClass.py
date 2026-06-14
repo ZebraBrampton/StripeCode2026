@@ -10,6 +10,11 @@ class Rides:
         self.width, self.height = scale
         self.outside = outside
         self.colour = colour
+        
+        if self.colour:
+            self.icon = False
+        else:
+            self.icon = True
 
         # Check if current image is the map
         if self.pos == (0, 0):
@@ -22,6 +27,7 @@ class Rides:
         # Initialize the image using initialized variables
         try:
             self.image = pygame.image.load(file).convert_alpha()
+            print(self.name)
 
             self.image = pygame.transform.scale(self.image, scale) # Change the scale of the image
 

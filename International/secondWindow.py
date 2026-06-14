@@ -4,12 +4,14 @@ from os import environ
 from initialization import config
 
 class RideWindow:
-    def __init__(self, caption, size, pos, queue_in, queue_out):
+    def __init__(self, caption, size, pos, queue_in, queue_out, random_data, given_data):
         self.caption = caption # Title of the window
         self.size = size # Size of the window
         self.pos = pos # Position of the window on the screen
         self.queue_in = queue_in # The pipeline that recieves messages
         self.queue_out = queue_out # The pipeline that sends out messages
+        self.random_data = random_data
+        self.given_data = given_data
 
         # Initialize variables for the window
         self.running = True
@@ -38,7 +40,7 @@ class RideWindow:
         self.alert_stations = [] # List of stations that have alerts
         
         # Visual variable (rectangles)
-            # Background colour of the window
+        # Background colour of the window
         self.background_colour = (0, 0, 0)
 
         # Audio initialization - fix sound effect
@@ -66,8 +68,6 @@ class RideWindow:
         # Draw the current hour
         self.draw_text(f"Current Hour: {self.curr_hour}", (255, 255, 255), (self.size[0] // 2, self.size[1] // 4))
 
-        
-
     def events(self): # Checks if user wants to quit pygame
 
         for event in pygame.event.get(): # Checks all pygame events
@@ -76,7 +76,6 @@ class RideWindow:
 
                 self.queue_out.put("QUIT") # Send a message to quit the program
                 self.running = False # Stop running the window loop to close the window
-
 
     def update(self): # Updates the current stats of the simulation
         
